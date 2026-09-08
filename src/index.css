@@ -1,0 +1,492 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.pdf-only { display: none; }
+.print-header { display: none; }
+.print-address-section { display: none; }
+.print-payment-summary { display: none; }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+
+  * {
+    box-sizing: border-box;
+    font-family: "Calibri", "Arial", "Helvetica", sans-serif !important;
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    color: #18212f;
+    font-family: "Calibri", "Arial", "Helvetica", sans-serif;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+
+  main > div {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .print-content {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    color: #18212f;
+    font-family: "Calibri", "Arial", "Helvetica", sans-serif;
+  }
+
+  .print-header {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 0 12px !important;
+    background: white !important;
+    color: #111827;
+  }
+
+  .print-header img {
+    display: block !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .print-header .text-sm {
+    font-size: 12px !important;
+  }
+
+  .print-address-section {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 14px;
+    padding: 0 0 10px;
+    border-bottom: 1px solid #cbd5e1;
+    color: #18212f;
+  }
+
+  .print-section-title {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #111827;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-family: "Calibri", "Arial", sans-serif;
+  }
+
+  .print-section-line {
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid #94a3b8;
+    margin-bottom: 8px;
+  }
+
+  .print-address-block {
+    width: 100%;
+    max-width: 100%;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #334155;
+  }
+
+  .print-address-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .print-address-label {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .print-address-value {
+    font-weight: 400;
+    color: #334155;
+    flex: 1 1 auto;
+    word-break: break-word;
+  }
+
+  .print-table {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    overflow: visible !important;
+    background: #eaf4ff !important;
+    border: none !important;
+    border-radius: 4px !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .print-table table {
+    display: table !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    font-size: 11px;
+    font-family: "Calibri", "Arial", sans-serif;
+    color: #111827;
+    overflow: visible !important;
+  }
+
+  .print-table thead {
+    display: table-header-group !important;
+  }
+
+  .print-table thead tr {
+    background-color: #dbeafe !important;
+  }
+
+  .print-table thead th {
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    color: #083344 !important;
+    background: #bfdbfe !important;
+    padding: 7px 5px !important;
+    border: 1px solid #64748b !important;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .print-table tbody td {
+    font-size: 11px !important;
+    color: #111827 !important;
+    padding: 5px 6px !important;
+    border: 1px solid #a1a1aa !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.35;
+    background: #fafdff !important;
+  }
+
+  .print-table tbody tr:nth-child(even) {
+    background: #eaf4ff !important;
+  }
+
+  .print-table tbody tr:nth-child(odd) {
+    background: #ffffff !important;
+  }
+
+  .print-table tbody tr:hover {
+    background: #dbeafe !important;
+  }
+
+  .print-table tbody td:nth-child(8),
+  .print-table tbody td:nth-child(9) {
+    background: #eef7ff !important;
+    color: #0f172a !important;
+  }
+
+  .print-table th,
+  .print-table td {
+    text-align: left;
+  }
+
+  .print-table input,
+  .print-table select,
+  .print-table textarea {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 1px !important;
+    font-size: 11px !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    color: #111827 !important;
+    font-family: "Calibri", "Arial", sans-serif;
+  }
+
+  .print-payment-summary {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0 0;
+    padding: 14px 14px 12px;
+    color: #111827;
+    background: #f8fafc;
+    border: 1px solid #d1d5db;
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: "Calibri", "Arial", sans-serif;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-sizing: border-box;
+  }
+
+  .print-payment-summary .print-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .print-payment-summary .print-section-line {
+    margin-bottom: 12px;
+  }
+
+  .print-payment-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: min(100%, 760px);
+    min-width: 0;
+    margin: 5px 0;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #111827;
+  }
+
+  .print-payment-label {
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+  }
+
+  .print-payment-value {
+    font-weight: 700;
+    color: #111827;
+    min-width: 120px;
+    text-align: right;
+  }
+
+  .print-payment-subtitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: #111827;
+    margin: 10px 0 6px;
+  }
+
+  .print-payment-summary-block {
+    margin: 12px 0 0;
+  }
+
+  .print-summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 8px 0 12px;
+    font-size: 12px;
+    table-layout: fixed;
+    background: #ffffff;
+  }
+
+  .print-summary-table thead th {
+    background: #eef2f7;
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+  }
+
+  .print-summary-table tbody td,
+  .print-summary-table tfoot td {
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    vertical-align: top;
+  }
+
+  .print-summary-table tbody tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .print-summary-table tfoot tr {
+    background: #eef2f7;
+  }
+
+  .print-summary-amount {
+    font-weight: 700;
+    color: #111827;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .print-charge-table td:first-child {
+    width: 70%;
+  }
+
+  .print-charge-table td:nth-child(2),
+  .print-payment-table td:nth-child(2) {
+    width: 30%;
+    text-align: right;
+  }
+
+  .print-cost-name {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .print-cost-detail {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+  }
+
+  .print-empty-cost-row {
+    margin: 8px 0 10px;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .print-payment-breakdown {
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+  }
+
+  .print-common-rate-row {
+    margin: 8px 0 10px;
+    padding: 8px 10px;
+    background: #eef2f7;
+    border-left: 3px solid #0f766e;
+    width: 100%;
+  }
+
+  .print-payment-status-block {
+    margin-top: 12px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 10px;
+  }
+
+  .print-payment-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+
+  .print-payment-status-label {
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+  }
+
+  .print-payment-status-value {
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .print-payment-amount-pending {
+    padding: 10px 0;
+    border-top: 1px solid #cbd5e1;
+    color: #b91c1c;
+  }
+
+  .print-payment-amount-pending .print-payment-status-value {
+    color: #b91c1c;
+    font-size: 16px;
+  }
+
+  .print-payment-total-row,
+  .print-payment-grand-total-row,
+  .print-payment-balance-row {
+    border-top: 1px solid #9ca3af;
+    padding-top: 5px;
+  }
+
+  .print-payment-grand-total-row {
+    background: #eef2f7;
+    padding: 8px 10px;
+    border-radius: 2px;
+  }
+
+  .print-payment-grand-total-row .print-payment-value {
+    color: #111827;
+    font-size: 13px;
+  }
+
+  .print-payment-balance-row {
+    background: #fff7ed;
+    padding: 8px 10px;
+    border-left: 3px solid #c2410c;
+  }
+
+  .print-payment-balance-row .print-payment-label {
+    color: #7c2d12;
+  }
+
+  .print-payment-balance-row .print-payment-value {
+    color: #9a5a1c;
+  }
+
+  .print-payment-excess-row {
+    color: #384252;
+  }
+
+  .print-cost-block {
+    margin: 4px 0;
+  }
+
+  .print-payment-detail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0 4px 10px;
+    font-size: 11px;
+    color: #475569;
+  }
+
+  .print-payment-detail-name {
+    font-weight: 700;
+    color: #334155;
+  }
+
+  .print-payment-detail-text {
+    color: #475569;
+  }
+
+  .total-area,
+  .total-amount {
+    display: block !important;
+    visibility: visible !important;
+    width: 100% !important;
+    color: black !important;
+  }
+
+  .print-table,
+  .print-table table,
+  .print-table tbody,
+  .print-table tr {
+    overflow: visible !important;
+  }
+
+  .total-area,
+  .total-amount {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
