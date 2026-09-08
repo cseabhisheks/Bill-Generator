@@ -68,7 +68,7 @@ const PrintHeader = ({ refNo = '', date = '', panNumber = '', mobileNumber = '' 
         </span>
 
         <span className="text-sm font-medium text-black">
-          Date: {date || '......................'}
+          Date: {date || ''}
         </span>
 
       </div>

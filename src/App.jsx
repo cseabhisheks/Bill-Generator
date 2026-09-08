@@ -37,9 +37,23 @@ export default function App() {
   const [workDescription, setWorkDescription] = useState("");
   const [panNumber, setPanNumber] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
+  const [dateMode, setDateMode] = useState("current");
+  const [manualDate, setManualDate] = useState("");
   const [commonRate, setCommonRate] = useState("");
   const [costRows, setCostRows] = useState([]);
   const [collectedAmount, setCollectedAmount] = useState("");
+
+  const offsetDate = new Date();
+  const timezoneOffset = offsetDate.getTimezoneOffset();
+  const localToday = new Date(offsetDate.getTime() - timezoneOffset * 60 * 1000);
+  const currentDate = localToday.toISOString().slice(0, 10);
+
+  const printableDate =
+    dateMode === "manual"
+      ? manualDate
+      : dateMode === "current"
+        ? currentDate
+        : "";
 
   const updateRow = (index, field, value) => {
     setRows((currentRows) => {
@@ -177,6 +191,32 @@ export default function App() {
 
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700">
+                Date
+              </label>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  className="rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
+                  value={dateMode}
+                  onChange={(event) => setDateMode(event.target.value)}
+                >
+                  <option value="current">Current Date</option>
+                  <option value="manual">Manual Date</option>
+                  <option value="none">No Date</option>
+                </select>
+
+                {dateMode === "manual" && (
+                  <input
+                    type="date"
+                    className="rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
+                    value={manualDate}
+                    onChange={(event) => setManualDate(event.target.value)}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-semibold text-gray-700">
                 Description
               </label>
               <textarea
@@ -191,7 +231,7 @@ export default function App() {
         </section>
 
         <div className="print-content">
-          <PrintHeader panNumber={panNumber} mobileNumber={mobileNumber} />
+          <PrintHeader panNumber={panNumber} mobileNumber={mobileNumber} date={printableDate} />
 
           {(siteAddress.trim() || workDescription.trim()) && (
             <section className="print-address-section">
