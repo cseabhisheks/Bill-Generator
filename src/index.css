@@ -8,6 +8,40 @@
 .print-address-section { display: none; }
 .print-payment-summary { display: none; }
 
+.preview-mode {
+  background: #f8fafc;
+}
+
+.preview-mode .no-print {
+  display: none !important;
+}
+
+.preview-mode .print-content {
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+  background: #ffffff;
+  padding: 24px 16px;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.preview-mode .print-header {
+  display: block !important;
+}
+
+.preview-mode .print-address-section {
+  display: block !important;
+}
+
+.preview-mode .print-payment-summary {
+  display: block !important;
+}
+
+.preview-mode .print-table {
+  display: block !important;
+}
+
 @media print {
   @page {
     size: A4 portrait;

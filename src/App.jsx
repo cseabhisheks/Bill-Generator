@@ -33,6 +33,8 @@ export default function App() {
   const [rows, setRows] = useState([{ ...EMPTY_ROW }]);
   const [descriptionEnabled, setDescriptionEnabled] = useState(true);
   const [rateEnabled, setRateEnabled] = useState(false);
+  const [letterheadEnabled, setLetterheadEnabled] = useState(true);
+  const [showPreview, setShowPreview] = useState(false);
   const [siteAddress, setSiteAddress] = useState("");
   const [workDescription, setWorkDescription] = useState("");
   const [panNumber, setPanNumber] = useState("");
@@ -133,7 +135,7 @@ export default function App() {
           : "Not Paid";
 
   return (
-    <main className="min-h-screen bg-gray-100 p-2 sm:p-4">
+    <main className={`min-h-screen bg-gray-100 p-2 sm:p-4 ${showPreview ? "preview-mode" : ""}`}>
       <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-md border border-gray-300 bg-white shadow-sm">
 
         <header className="no-print border-b border-gray-300 bg-gray-50 px-3 py-2">
@@ -144,6 +146,7 @@ export default function App() {
         <div className="no-print flex flex-wrap items-center gap-5 border-b border-gray-300 bg-gray-50 px-3 py-2">
           <Toggle label="Description" enabled={descriptionEnabled} onChange={setDescriptionEnabled} />
           <Toggle label="Rate" enabled={rateEnabled} onChange={setRateEnabled} />
+          <Toggle label="Letterhead" enabled={letterheadEnabled} onChange={setLetterheadEnabled} />
         </div>
 
         <section className="no-print border-b border-gray-300 bg-gray-50 px-3 py-3">
@@ -231,7 +234,9 @@ export default function App() {
         </section>
 
         <div className="print-content">
-          <PrintHeader panNumber={panNumber} mobileNumber={mobileNumber} date={printableDate} />
+          {letterheadEnabled && (
+            <PrintHeader panNumber={panNumber} mobileNumber={mobileNumber} date={printableDate} />
+          )}
 
           {(siteAddress.trim() || workDescription.trim()) && (
             <section className="print-address-section">
@@ -362,6 +367,13 @@ export default function App() {
               className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
               + Add Cost
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPreview(!showPreview)}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              {showPreview ? "Hide Preview" : "Preview"}
             </button>
             <button
               onClick={() => window.print()}
