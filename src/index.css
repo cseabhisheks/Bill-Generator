@@ -9,7 +9,18 @@
 .print-payment-summary { display: none; }
 
 .preview-mode {
-  background: #f8fafc;
+  background: #ffffff !important;
+  padding: 0 !important;
+}
+
+.preview-mode > div {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: visible !important;
 }
 
 .preview-mode .no-print {
@@ -20,26 +31,333 @@
   display: block !important;
   width: 100%;
   max-width: 100%;
+  color: #18212f;
   background: #ffffff;
-  padding: 24px 16px;
-  border: 1px solid #d1d5db;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+  font-family: "Calibri", "Arial", "Helvetica", sans-serif;
 }
 
 .preview-mode .print-header {
   display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 0 12px !important;
+  background: #ffffff !important;
+  color: #111827;
+}
+
+.preview-mode .print-header img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.preview-mode .print-header .text-sm {
+  font-size: 12px !important;
 }
 
 .preview-mode .print-address-section {
   display: block !important;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 14px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #cbd5e1;
+  color: #18212f;
 }
 
-.preview-mode .print-payment-summary {
-  display: block !important;
+.preview-mode .print-section-title {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-family: "Calibri", "Arial", sans-serif;
+}
+
+.preview-mode .print-section-line {
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid #94a3b8;
+  margin-bottom: 8px;
+}
+
+.preview-mode .print-address-block {
+  width: 100%;
+  max-width: 100%;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.preview-mode .print-address-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.preview-mode .print-address-label {
+  font-weight: 700;
+  color: #111827;
+}
+
+.preview-mode .print-address-value {
+  font-weight: 400;
+  color: #334155;
+  flex: 1 1 auto;
+  word-break: break-word;
 }
 
 .preview-mode .print-table {
   display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  overflow: visible !important;
+  background: #eaf4ff !important;
+  border: none !important;
+  border-radius: 4px !important;
+}
+
+.preview-mode .print-table table {
+  display: table !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  table-layout: fixed !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-size: 11px;
+  font-family: "Calibri", "Arial", sans-serif;
+  color: #111827;
+  overflow: visible !important;
+}
+
+.preview-mode .print-table thead {
+  display: table-header-group !important;
+}
+
+.preview-mode .print-table thead tr {
+  background-color: #dbeafe !important;
+}
+
+.preview-mode .print-table thead th {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  color: #083344 !important;
+  background: #bfdbfe !important;
+  padding: 7px 5px !important;
+  border: 1px solid #64748b !important;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.preview-mode .print-table tbody td {
+  font-size: 11px !important;
+  color: #111827 !important;
+  padding: 5px 6px !important;
+  border: 1px solid #a1a1aa !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.35;
+  background: #fafdff !important;
+}
+
+.preview-mode .print-table tbody tr:nth-child(even) {
+  background: #eaf4ff !important;
+}
+
+.preview-mode .print-table tbody tr:nth-child(odd) {
+  background: #ffffff !important;
+}
+
+.preview-mode .print-table tbody tr:hover {
+  background: #dbeafe !important;
+}
+
+.preview-mode .print-table tbody td:nth-child(8),
+.preview-mode .print-table tbody td:nth-child(9) {
+  background: #eef7ff !important;
+  color: #0f172a !important;
+}
+
+.preview-mode .print-table th,
+.preview-mode .print-table td {
+  text-align: left;
+}
+
+.preview-mode .print-payment-summary {
+  display: block !important;
+  width: 100%;
+  max-width: 100%;
+  margin: 16px 0 0;
+  padding: 14px 14px 12px;
+  color: #111827;
+  background: #f8fafc;
+  border: 1px solid #d1d5db;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: "Calibri", "Arial", sans-serif;
+}
+
+.preview-mode .print-payment-summary .print-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.preview-mode .print-payment-summary .print-section-line {
+  margin-bottom: 12px;
+}
+
+.preview-mode .print-payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: min(100%, 760px);
+  min-width: 0;
+  margin: 5px 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.preview-mode .print-payment-label {
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.preview-mode .print-payment-value {
+  font-weight: 700;
+  color: #111827;
+  min-width: 120px;
+  text-align: right;
+}
+
+.preview-mode .print-payment-subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  margin: 10px 0 6px;
+}
+
+.preview-mode .print-payment-summary-block {
+  margin: 12px 0 0;
+}
+
+.preview-mode .print-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 8px 0 12px;
+  font-size: 12px;
+  table-layout: fixed;
+  background: #ffffff;
+}
+
+.preview-mode .print-summary-table thead th {
+  background: #eef2f7;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  text-align: left;
+}
+
+.preview-mode .print-summary-table tbody td,
+.preview-mode .print-summary-table tfoot td {
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  vertical-align: top;
+}
+
+.preview-mode .print-summary-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.preview-mode .print-summary-table tfoot tr {
+  background: #eef2f7;
+}
+
+.preview-mode .print-summary-amount {
+  font-weight: 700;
+  color: #111827;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.preview-mode .print-charge-table td:first-child {
+  width: 70%;
+}
+
+.preview-mode .print-charge-table td:nth-child(2),
+.preview-mode .print-payment-table td:nth-child(2) {
+  width: 30%;
+  text-align: right;
+}
+
+.preview-mode .print-cost-name {
+  font-weight: 700;
+  color: #111827;
+}
+
+.preview-mode .print-cost-detail {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.preview-mode .print-payment-breakdown {
+  border-top: 1px solid #cbd5e1;
+  padding-top: 10px;
+}
+
+.preview-mode .print-payment-status-block {
+  margin-top: 12px;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 10px;
+}
+
+.preview-mode .print-payment-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  margin: 8px 0;
+}
+
+.preview-mode .print-payment-status-label {
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+}
+
+.preview-mode .print-payment-status-value {
+  font-weight: 700;
+  color: #111827;
+}
+
+.preview-mode .print-payment-amount-pending {
+  padding: 10px 0;
+  border-top: 1px solid #cbd5e1;
+  color: #b91c1c;
+}
+
+.preview-mode .print-payment-amount-pending .print-payment-status-value {
+  color: #b91c1c;
+  font-size: 16px;
 }
 
 @media print {
