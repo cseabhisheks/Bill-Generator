@@ -3,6 +3,21 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --page-bg: #ffffff;
+  --page-text: #111827;
+  --page-text-soft: #334155;
+  --page-text-muted: #64748b;
+  --page-line: #cbd5e1;
+  --page-table-bg: #eaf4ff;
+  --page-table-head-bg: #bfdbfe;
+  --page-table-head-text: #083344;
+  --page-table-row-bg: #fafdff;
+  --page-summary-bg: #f8fafc;
+  --page-table-border: #a1a1aa;
+  --page-danger: #b91c1c;
+}
+
 .pdf-only { display: none; }
 .print-header { display: none; }
 .print-address-section { display: none; }
@@ -360,6 +375,30 @@
   font-size: 16px;
 }
 
+.preview-home-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.preview-home-button {
+  border: 1px solid #334155;
+  background: #ffffff;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.preview-home-button:hover {
+  background: #e5e7eb;
+}
+
 @media print {
   @page {
     size: A4 portrait;
@@ -374,8 +413,8 @@
   body {
     margin: 0 !important;
     padding: 0 !important;
-    background: white !important;
-    color: #18212f;
+    background: var(--page-bg) !important;
+    color: var(--page-text);
     font-family: "Calibri", "Arial", "Helvetica", sans-serif;
   }
 
@@ -384,7 +423,7 @@
   }
 
   main {
-    background: #ffffff !important;
+    background: var(--page-bg) !important;
     padding: 0 !important;
   }
 
@@ -392,7 +431,7 @@
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: #ffffff !important;
+    background: var(--page-bg) !important;
     overflow: visible !important;
     max-width: 100% !important;
     width: 100% !important;
@@ -402,7 +441,8 @@
     display: block !important;
     width: 100%;
     max-width: 100%;
-    color: #18212f;
+    color: var(--page-text);
+    background: var(--page-bg);
     font-family: "Calibri", "Arial", "Helvetica", sans-serif;
   }
 
@@ -412,8 +452,8 @@
     max-width: 100% !important;
     padding: 0 !important;
     margin: 0 0 12px !important;
-    background: white !important;
-    color: #111827;
+    background: var(--page-bg) !important;
+    color: var(--page-text);
   }
 
   .print-header img {
@@ -432,8 +472,8 @@
     max-width: 100%;
     margin: 0 0 14px;
     padding: 0 0 10px;
-    border-bottom: 1px solid #cbd5e1;
-    color: #18212f;
+    border-bottom: 1px solid var(--page-line);
+    color: var(--page-text);
   }
 
   .print-section-title {
@@ -441,7 +481,7 @@
     font-size: 16px;
     font-weight: 700;
     line-height: 1.4;
-    color: #111827;
+    color: var(--page-text);
     text-transform: uppercase;
     letter-spacing: 0.02em;
     font-family: "Calibri", "Arial", sans-serif;
@@ -459,7 +499,7 @@
     max-width: 100%;
     font-size: 12px;
     line-height: 1.6;
-    color: #334155;
+    color: var(--page-text-soft);
   }
 
   .print-address-row {
@@ -471,12 +511,12 @@
 
   .print-address-label {
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
   }
 
   .print-address-value {
     font-weight: 400;
-    color: #334155;
+    color: var(--page-text-soft);
     flex: 1 1 auto;
     word-break: break-word;
   }
@@ -488,7 +528,7 @@
     margin: 0 !important;
     padding: 8px !important;
     overflow: visible !important;
-    background: #eaf4ff !important;
+    background: var(--page-table-bg) !important;
     border: none !important;
     border-radius: 4px !important;
     scrollbar-width: none !important;
@@ -507,7 +547,7 @@
     border-spacing: 0 !important;
     font-size: 11px;
     font-family: "Calibri", "Arial", sans-serif;
-    color: #111827;
+    color: var(--page-text);
     overflow: visible !important;
   }
 
@@ -516,53 +556,67 @@
   }
 
   .print-table thead tr {
-    background-color: #dbeafe !important;
+    background: var(--page-table-head-bg) !important;
+  }
+
+  .print-table thead tr:first-child {
+    background: var(--page-table-head-bg) !important;
+  }
+
+  .print-table thead tr:first-child th {
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    color: var(--page-table-head-text) !important;
+    background: var(--page-table-head-bg) !important;
+    padding: 7px 5px !important;
+    border: 1px solid #64748b !important;
+    vertical-align: middle;
+    text-align: center;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .print-table thead th {
     font-size: 11.5px !important;
     font-weight: 700 !important;
-    color: #083344 !important;
-    background: #bfdbfe !important;
+    color: var(--page-table-head-text) !important;
+    background: var(--page-table-head-bg) !important;
     padding: 7px 5px !important;
     border: 1px solid #64748b !important;
     vertical-align: middle;
     text-align: center;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .print-table tbody td {
     font-size: 11px !important;
-    color: #111827 !important;
+    color: var(--page-text) !important;
     padding: 5px 6px !important;
-    border: 1px solid #a1a1aa !important;
+    border: 1px solid var(--page-table-border) !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     line-height: 1.35;
-    background: #fafdff !important;
+    background: var(--page-table-row-bg) !important;
   }
 
   .print-table tbody tr:nth-child(even) {
-    background: #eaf4ff !important;
+    background: var(--page-table-bg) !important;
   }
 
   .print-table tbody tr:nth-child(odd) {
-    background: #ffffff !important;
+    background: var(--page-bg) !important;
   }
 
   .print-table tbody tr:hover {
-    background: #dbeafe !important;
+    background: var(--page-table-head-bg) !important;
   }
 
   .print-table tbody td:nth-child(8),
   .print-table tbody td:nth-child(9) {
     background: #eef7ff !important;
     color: #0f172a !important;
-  }
-
-  .print-table th,
-  .print-table td {
-    text-align: left;
   }
 
   .print-table input,
@@ -575,7 +629,7 @@
     border: none !important;
     outline: none !important;
     background: transparent !important;
-    color: #111827 !important;
+    color: var(--page-text) !important;
     font-family: "Calibri", "Arial", sans-serif;
   }
 
@@ -585,9 +639,9 @@
     max-width: 100%;
     margin: 16px 0 0;
     padding: 14px 14px 12px;
-    color: #111827;
-    background: #f8fafc;
-    border: 1px solid #d1d5db;
+    color: var(--page-text);
+    background: var(--page-summary-bg);
+    border: 1px solid var(--page-line);
     font-size: 12px;
     line-height: 1.5;
     font-family: "Calibri", "Arial", sans-serif;
@@ -599,7 +653,7 @@
   .print-payment-summary .print-section-title {
     font-size: 16px;
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
   }
 
   .print-payment-summary .print-section-line {
@@ -616,18 +670,18 @@
     margin: 5px 0;
     font-size: 12px;
     line-height: 1.35;
-    color: #111827;
+    color: var(--page-text);
   }
 
   .print-payment-label {
     font-weight: 600;
-    color: #334155;
+    color: var(--page-text-soft);
     white-space: nowrap;
   }
 
   .print-payment-value {
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
     min-width: 120px;
     text-align: right;
   }
@@ -635,7 +689,7 @@
   .print-payment-subtitle {
     font-size: 13px;
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
     margin: 10px 0 6px;
   }
 
@@ -650,29 +704,29 @@
     margin: 8px 0 12px;
     font-size: 12px;
     table-layout: fixed;
-    background: #ffffff;
+    background: var(--page-bg);
   }
 
   .print-summary-table thead th {
     background: #eef2f7;
-    color: #111827;
+    color: var(--page-text);
     font-size: 12px;
     font-weight: 700;
     padding: 8px 10px;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--page-line);
     text-align: left;
   }
 
   .print-summary-table tbody td,
   .print-summary-table tfoot td {
     padding: 8px 10px;
-    border: 1px solid #cbd5e1;
-    color: #334155;
+    border: 1px solid var(--page-line);
+    color: var(--page-text-soft);
     vertical-align: top;
   }
 
   .print-summary-table tbody tr:nth-child(even) {
-    background: #f8fafc;
+    background: var(--page-summary-bg);
   }
 
   .print-summary-table tfoot tr {
@@ -681,7 +735,7 @@
 
   .print-summary-amount {
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
     text-align: right;
     white-space: nowrap;
   }
@@ -698,23 +752,23 @@
 
   .print-cost-name {
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
   }
 
   .print-cost-detail {
     font-size: 11px;
-    color: #64748b;
+    color: var(--page-text-muted);
     font-style: italic;
   }
 
   .print-empty-cost-row {
     margin: 8px 0 10px;
     font-size: 12px;
-    color: #64748b;
+    color: var(--page-text-muted);
   }
 
   .print-payment-breakdown {
-    border-top: 1px solid #cbd5e1;
+    border-top: 1px solid var(--page-line);
     padding-top: 10px;
   }
 
@@ -728,7 +782,7 @@
 
   .print-payment-status-block {
     margin-top: 12px;
-    border-top: 1px solid #cbd5e1;
+    border-top: 1px solid var(--page-line);
     padding-top: 10px;
   }
 
@@ -743,23 +797,23 @@
 
   .print-payment-status-label {
     font-weight: 700;
-    color: #334155;
+    color: var(--page-text-soft);
     text-transform: uppercase;
   }
 
   .print-payment-status-value {
     font-weight: 700;
-    color: #111827;
+    color: var(--page-text);
   }
 
   .print-payment-amount-pending {
     padding: 10px 0;
-    border-top: 1px solid #cbd5e1;
-    color: #b91c1c;
+    border-top: 1px solid var(--page-line);
+    color: var(--page-danger);
   }
 
   .print-payment-amount-pending .print-payment-status-value {
-    color: #b91c1c;
+    color: var(--page-danger);
     font-size: 16px;
   }
 
@@ -777,7 +831,7 @@
   }
 
   .print-payment-grand-total-row .print-payment-value {
-    color: #111827;
+    color: var(--page-text);
     font-size: 13px;
   }
 
@@ -814,7 +868,7 @@
 
   .print-payment-detail-name {
     font-weight: 700;
-    color: #334155;
+    color: var(--page-text-soft);
   }
 
   .print-payment-detail-text {
@@ -826,7 +880,7 @@
     display: block !important;
     visibility: visible !important;
     width: 100% !important;
-    color: black !important;
+    color: var(--page-text) !important;
   }
 
   .print-table,

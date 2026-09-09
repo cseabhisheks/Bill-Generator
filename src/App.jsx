@@ -44,6 +44,7 @@ export default function App() {
   const [commonRate, setCommonRate] = useState("");
   const [costRows, setCostRows] = useState([]);
   const [collectedAmount, setCollectedAmount] = useState("");
+  const [collectedDescription, setCollectedDescription] = useState("");
 
   const offsetDate = new Date();
   const timezoneOffset = offsetDate.getTimezoneOffset();
@@ -87,7 +88,7 @@ export default function App() {
   const addCost = () => {
     setCostRows((currentRows) => [
       ...currentRows,
-      { name: "Other", amount: "0", detail: "" },
+      { name: "", amount: "", detail: "" },
     ]);
   };
 
@@ -109,6 +110,28 @@ export default function App() {
   const printableCostRows = costRows.filter(
     (cost) => (cost.name || "").trim().length > 0 || Number(cost.amount || 0) > 0,
   );
+
+  const resetAll = () => {
+    setRows([{ ...EMPTY_ROW }]);
+    setDescriptionEnabled(true);
+    setRateEnabled(false);
+    setLetterheadEnabled(true);
+    setShowPreview(false);
+    setSiteAddress("");
+    setWorkDescription("");
+    setPanNumber("");
+    setMobileNumber("");
+    setDateMode("current");
+    setManualDate("");
+    setCommonRate("");
+    setCostRows([]);
+    setCollectedAmount("");
+    setCollectedDescription("");
+  };
+
+  const resetTableOnly = () => {
+    setRows([{ ...EMPTY_ROW }]);
+  };
 
   const totalArea = calculateTotal(rows);
   const totalAmount = rateEnabled
@@ -147,6 +170,29 @@ export default function App() {
           <Toggle label="Description" enabled={descriptionEnabled} onChange={setDescriptionEnabled} />
           <Toggle label="Rate" enabled={rateEnabled} onChange={setRateEnabled} />
           <Toggle label="Letterhead" enabled={letterheadEnabled} onChange={setLetterheadEnabled} />
+
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={resetAll}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPreview(!showPreview)}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              {showPreview ? "Hide Preview" : "Preview"}
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+              🖨 Print
+            </button>
+          </div>
         </div>
 
         <section className="no-print border-b border-gray-300 bg-gray-50 px-3 py-3">
@@ -233,6 +279,18 @@ export default function App() {
           </div>
         </section>
 
+        {showPreview && (
+          <section className="preview-home-bar">
+            <button
+              type="button"
+              onClick={() => setShowPreview(false)}
+              className="preview-home-button"
+            >
+              Home
+            </button>
+          </section>
+        )}
+
         <div className="print-content">
           {letterheadEnabled && (
             <PrintHeader panNumber={panNumber} mobileNumber={mobileNumber} date={printableDate} />
@@ -267,6 +325,8 @@ export default function App() {
               removeRow={removeRow}
               descriptionEnabled={descriptionEnabled}
               rateEnabled={rateEnabled}
+              commonRate={commonRate}
+              setCommonRate={setCommonRate}
             />
 
             <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} commonRate={commonRate} />
@@ -330,7 +390,12 @@ export default function App() {
                     <td className="print-summary-amount">{formatCurrency(additionalChargesTotal)}</td>
                   </tr>
                   <tr>
-                    <td>Total Paid</td>
+                    <td>
+                      <span className="print-cost-name">Amount Already Collected</span>
+                      {(collectedDescription || "").trim() && (
+                        <small className="print-cost-detail"> — {collectedDescription.trim()}</small>
+                      )}
+                    </td>
                     <td className="print-summary-amount">{formatCurrency(collectedToUse)}</td>
                   </tr>
                 </tbody>
@@ -359,47 +424,21 @@ export default function App() {
         </div>
 
         <section className="no-print border-t border-gray-300 bg-gray-50 p-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <AddRowButton onClick={addRow} />
-            <button
-              type="button"
-              onClick={addCost}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              + Add Cost
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowPreview(!showPreview)}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              {showPreview ? "Hide Preview" : "Preview"}
-            </button>
-            <button
-              onClick={() => window.print()}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              🖨 Print
-            </button>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <AddRowButton onClick={addRow} />
+              <button
+                type="button"
+                onClick={resetTableOnly}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Reset Table
+              </button>
+            </div>
           </div>
 
           <div className="mt-3 flex flex-wrap items-end gap-3">
-            {!rateEnabled && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">Common Rate</span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="w-36 rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
-                  value={commonRate}
-                  onChange={(event) => setCommonRate(event.target.value)}
-                  placeholder="₹ / sq.ft."
-                />
-              </div>
-            )}
-
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-medium text-gray-700">Amount Already Collected / Paid</span>
               <input
                 type="number"
@@ -407,13 +446,31 @@ export default function App() {
                 className="w-36 rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
                 value={collectedAmount}
                 onChange={(event) => setCollectedAmount(event.target.value)}
+                placeholder="₹ 0"
+              />
+              <input
+                type="text"
+                className="w-40 rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
+                value={collectedDescription}
+                onChange={(event) => setCollectedDescription(event.target.value)}
+                placeholder="Description"
               />
             </div>
           </div>
 
-          {costRows.length > 0 && (
-            <div className="mt-4 rounded border border-gray-300 bg-white p-3">
-              <div className="mb-2 text-sm font-semibold text-gray-700">Additional Costs</div>
+          <div className="mt-4 rounded border border-gray-300 bg-white p-3">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <div className="text-sm font-semibold text-gray-700">Additional Costs</div>
+              <button
+                type="button"
+                onClick={addCost}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                + Add Cost
+              </button>
+            </div>
+
+            {costRows.length > 0 && (
               <div className="space-y-2">
                 {costRows.map((cost, index) => (
                   <div key={`cost-${index}`} className="flex flex-wrap items-center gap-2">
@@ -450,12 +507,12 @@ export default function App() {
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </section>
 
         <div className="no-print flex flex-col gap-2 border-t border-gray-300 bg-gray-50 p-2 sm:flex-row sm:items-center sm:justify-between">
-          <span className="text-xs text-gray-600">{formatCurrency(totalAmount)}</span>
+          <span className="text-xs text-gray-600">{formatCurrency(pendingAmount)}</span>
           <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} commonRate={commonRate} />
         </div>
 
