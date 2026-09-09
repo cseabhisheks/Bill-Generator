@@ -1,5 +1,4 @@
 export default function TotalArea({
-  total,
   totalAmount,
   rateEnabled,
   commonRate,
@@ -10,20 +9,13 @@ export default function TotalArea({
     <div className="flex items-center justify-end gap-6 border border-gray-300 bg-gray-50 px-3 py-2">
       {rateEnabled ? (
         <div className="text-sm font-medium text-gray-600">
-          Total Amount
+          Total Work Amount
           <span className="ml-2 font-bold text-gray-900">
             ₹{totalAmount.toFixed(2)}
           </span>
         </div>
       ) : (
         <div className="flex flex-wrap items-center gap-3">
-          <div className="text-sm font-medium text-gray-600">
-            Total Area
-            <span className="ml-2 font-bold text-gray-900">
-              {total.toFixed(2)} sq. ft.
-            </span>
-          </div>
-
           {hasCommonRate && (
             <div className="text-sm font-medium text-gray-600">
               Rate
@@ -34,7 +26,7 @@ export default function TotalArea({
           )}
 
           <div className="text-sm font-medium text-gray-600">
-            Total Amount
+            Total Work Amount
             <span className="ml-2 font-bold text-gray-900">
               ₹{totalAmount.toFixed(2)}
             </span>

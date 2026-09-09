@@ -20,11 +20,20 @@
 
 .dimension-table-wrapper {
   width: 100%;
+  max-width: 100%;
   background: #ffffff;
   border: 1px solid var(--page-line);
   border-radius: 8px;
   padding: 10px;
   box-sizing: border-box;
+  display: block;
+  overflow-x: auto;
+}
+
+.dimension-table-content {
+  width: 100%;
+  table-layout: fixed;
+  max-width: 100%;
 }
 
 .table-title-editor {
@@ -92,10 +101,13 @@
 .print-table-total-summary-item {
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 6px;
   padding: 4px 8px;
   border-radius: 6px;
   background: var(--page-bg);
+  white-space: nowrap;
+  min-width: 140px;
 }
 
 .print-table-total-label {
@@ -104,12 +116,16 @@
   color: var(--page-text-soft);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .print-table-total-value {
   font-size: 12px;
   font-weight: 800;
   color: var(--page-text);
+  white-space: nowrap;
+  min-width: 84px;
+  text-align: left;
 }
 
 .pdf-only { display: none; }
@@ -277,6 +293,7 @@
   text-overflow: ellipsis !important;
   line-height: 1.35;
   background: #fafdff !important;
+  text-align: center !important;
 }
 
 .preview-mode .print-table tbody tr:nth-child(even) {

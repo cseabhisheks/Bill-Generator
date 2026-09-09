@@ -51,7 +51,7 @@ export default function DimensionTable({
       <div className="flex items-start gap-3">
         <div className="flex w-full flex-col gap-2">
           <div className="flex items-start gap-3">
-            <table className="w-max table-auto border-collapse text-sm">
+            <table className="dimension-table-content table-auto border-collapse text-sm">
               <thead>
                 <tr className="bg-gray-100 text-center text-xs font-semibold text-gray-700">
                   <th rowSpan="2" className="border border-gray-300 px-1 py-1">
@@ -139,10 +139,12 @@ export default function DimensionTable({
 
       <div className="print-table-total-summary">
         <div className="print-table-total-summary-card">
-          <div className="print-table-total-summary-item">
-            <span className="print-table-total-label">Total Area</span>
-            <span className="print-table-total-value">{tableArea.toFixed(2)} sq. ft.</span>
-          </div>
+          {!rateEnabled && (
+            <div className="print-table-total-summary-item">
+              <span className="print-table-total-label">Total Area</span>
+              <span className="print-table-total-value">{tableArea.toFixed(2)} sq. ft.</span>
+            </div>
+          )}
           {!rateEnabled && (
             <div className="print-table-total-summary-item">
               <span className="print-table-total-label">Rate</span>

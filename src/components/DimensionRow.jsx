@@ -84,7 +84,7 @@ export default function DimensionRow({
         />
       </td>
 
-      <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-right">
+      <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-center">
         {area.toFixed(2)}
       </td>
 
@@ -103,7 +103,7 @@ export default function DimensionRow({
             />
           </td>
 
-          <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-right">
+          <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-center">
             ₹{amount.toFixed(2)}
           </td>
         </>
