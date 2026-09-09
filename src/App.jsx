@@ -30,7 +30,7 @@ const currencyFormatter = new Intl.NumberFormat("en-IN", {
 const formatCurrency = (value) => currencyFormatter.format(Number(value || 0));
 
 export default function App() {
-  const [rows, setRows] = useState([{ ...EMPTY_ROW }]);
+  const [tables, setTables] = useState([{ rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
   const [descriptionEnabled, setDescriptionEnabled] = useState(true);
   const [rateEnabled, setRateEnabled] = useState(false);
   const [letterheadEnabled, setLetterheadEnabled] = useState(true);
@@ -41,7 +41,6 @@ export default function App() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [dateMode, setDateMode] = useState("current");
   const [manualDate, setManualDate] = useState("");
-  const [commonRate, setCommonRate] = useState("");
   const [costRows, setCostRows] = useState([]);
   const [collectedAmount, setCollectedAmount] = useState("");
   const [collectedDescription, setCollectedDescription] = useState("");
@@ -58,31 +57,53 @@ export default function App() {
         ? currentDate
         : "";
 
-  const updateRow = (index, field, value) => {
-    setRows((currentRows) => {
-      const updatedRows = [...currentRows];
+  const updateRow = (tableIndex, rowIndex, field, value) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
 
-      updatedRows[index] = {
-        ...updatedRows[index],
-        [field]: value,
-      };
-
-      return updatedRows;
-    });
+        return {
+          ...table,
+          rows: table.rows.map((row, currentRowIndex) =>
+            currentRowIndex === rowIndex
+              ? { ...row, [field]: value }
+              : row,
+          ),
+        };
+      }),
+    );
   };
 
-  const addRow = () => {
-    setRows((currentRows) => [...currentRows, { ...EMPTY_ROW }]);
+  const addTable = () => {
+    setTables((currentTables) => [...currentTables, { rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
   };
 
-  const removeRow = (index) => {
-    setRows((currentRows) => {
-      if (currentRows.length === 1) {
-        return [{ ...EMPTY_ROW }];
-      }
+  const addRow = (tableIndex = 0) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) =>
+        currentTableIndex === tableIndex
+          ? { ...table, rows: [...table.rows, { ...EMPTY_ROW }] }
+          : table,
+      ),
+    );
+  };
 
-      return currentRows.filter((_, rowIndex) => rowIndex !== index);
-    });
+  const removeRow = (tableIndex, rowIndex) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
+
+        const nextRows = table.rows.filter((_, index) => index !== rowIndex);
+        return {
+          ...table,
+          rows: nextRows.length > 0 ? nextRows : [{ ...EMPTY_ROW }],
+        };
+      }),
+    );
   };
 
   const addCost = () => {
@@ -111,8 +132,24 @@ export default function App() {
     (cost) => (cost.name || "").trim().length > 0 || Number(cost.amount || 0) > 0,
   );
 
+  const updateCommonRate = (tableIndex, value) => {
+    setTables((currentTables) =>
+      currentTables.map((table, index) =>
+        index === tableIndex ? { ...table, commonRate: value } : table,
+      ),
+    );
+  };
+
+  const updateTableTitle = (tableIndex, value) => {
+    setTables((currentTables) =>
+      currentTables.map((table, index) =>
+        index === tableIndex ? { ...table, title: value } : table,
+      ),
+    );
+  };
+
   const resetAll = () => {
-    setRows([{ ...EMPTY_ROW }]);
+    setTables([{ rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
     setDescriptionEnabled(true);
     setRateEnabled(false);
     setLetterheadEnabled(true);
@@ -123,20 +160,22 @@ export default function App() {
     setMobileNumber("");
     setDateMode("current");
     setManualDate("");
-    setCommonRate("");
     setCostRows([]);
     setCollectedAmount("");
     setCollectedDescription("");
   };
 
   const resetTableOnly = () => {
-    setRows([{ ...EMPTY_ROW }]);
+    setTables((currentTables) =>
+      currentTables.map((table) => ({ ...table, rows: [{ ...EMPTY_ROW }], commonRate: table.commonRate || "" })),
+    );
   };
 
-  const totalArea = calculateTotal(rows);
+  const allRows = tables.flatMap((table) => table.rows);
+  const totalArea = calculateTotal(allRows);
   const totalAmount = rateEnabled
-    ? calculateTotalAmount(rows)
-    : calculateCommonRateAmount(rows, commonRate);
+    ? calculateTotalAmount(allRows)
+    : tables.reduce((sum, table) => sum + calculateCommonRateAmount(table.rows, table.commonRate), 0);
   const additionalChargesTotal = costRows.reduce((sum, row) => {
     const numericAmount = Number.parseFloat(row.amount || 0);
     return sum + (Number.isFinite(numericAmount) ? numericAmount : 0);
@@ -319,17 +358,24 @@ export default function App() {
           )}
 
           <div className="print-table">
-            <DimensionTable
-              rows={rows}
-              updateRow={updateRow}
-              removeRow={removeRow}
-              descriptionEnabled={descriptionEnabled}
-              rateEnabled={rateEnabled}
-              commonRate={commonRate}
-              setCommonRate={setCommonRate}
-            />
+            {tables.map((table, tableIndex) => (
+              <div className="mb-3" key={`table-${tableIndex}`}>
+                <DimensionTable
+                  rows={table.rows}
+                  updateRow={(rowIndex, field, value) => updateRow(tableIndex, rowIndex, field, value)}
+                  removeRow={(rowIndex) => removeRow(tableIndex, rowIndex)}
+                  descriptionEnabled={descriptionEnabled}
+                  rateEnabled={rateEnabled}
+                  commonRate={table.commonRate}
+                  setCommonRate={(value) => updateCommonRate(tableIndex, value)}
+                  showCommonRateInput={!rateEnabled}
+                  tableTitle={table.title || ""}
+                  setTableTitle={(value) => updateTableTitle(tableIndex, value)}
+                />
+              </div>
+            ))}
 
-            <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} commonRate={commonRate} />
+            <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} tables={tables} />
           </div>
 
           <section className="print-payment-summary">
@@ -426,7 +472,14 @@ export default function App() {
         <section className="no-print border-t border-gray-300 bg-gray-50 p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <AddRowButton onClick={addRow} />
+              <AddRowButton onClick={() => addRow(tables.length - 1)} />
+              <button
+                type="button"
+                onClick={addTable}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                + Add Table
+              </button>
               <button
                 type="button"
                 onClick={resetTableOnly}
@@ -511,9 +564,8 @@ export default function App() {
           </div>
         </section>
 
-        <div className="no-print flex flex-col gap-2 border-t border-gray-300 bg-gray-50 p-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="no-print flex flex-wrap items-center gap-2 border-t border-gray-300 bg-gray-50 p-2">
           <span className="text-xs text-gray-600">{formatCurrency(pendingAmount)}</span>
-          <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} commonRate={commonRate} />
         </div>
 
       </div>
