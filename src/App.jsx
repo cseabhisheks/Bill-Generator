@@ -371,6 +371,7 @@ export default function App() {
                   showCommonRateInput={!rateEnabled}
                   tableTitle={table.title || ""}
                   setTableTitle={(value) => updateTableTitle(tableIndex, value)}
+                  showPreview={showPreview}
                 />
               </div>
             ))}

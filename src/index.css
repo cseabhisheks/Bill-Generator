@@ -26,14 +26,180 @@
   border-radius: 8px;
   padding: 10px;
   box-sizing: border-box;
-  display: block;
-  overflow-x: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-x: visible;
+  overflow-y: visible;
+  min-height: auto;
+  height: auto;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.dimension-table-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-width: 640px;
+  overflow-x: visible;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+}
+
+.dimension-table-scroll {
+  flex: 0 0 auto;
+  width: min(100%, 740px);
+  min-width: 420px;
+  overflow-x: visible;
+  overflow-y: hidden;
 }
 
 .dimension-table-content {
   width: 100%;
   table-layout: fixed;
   max-width: 100%;
+  min-width: 420px;
+  border-collapse: collapse;
+}
+
+.dimension-table-content th,
+.dimension-table-content td {
+  min-width: 56px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dimension-table-content input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 50px;
+  height: 34px;
+}
+
+.dimension-table-content .dimension-table-cell-input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 52px;
+}
+
+.dimension-table-content .dimension-table-description-input {
+  width: 100%;
+  max-width: 100%;
+  min-width: 80px;
+}
+
+.table-summary-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.table-summary-toggle {
+  border: 1px solid var(--page-line);
+  background: var(--page-bg);
+  color: var(--page-text);
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.table-summary-toggle:hover {
+  background: var(--page-table-head-bg);
+  color: var(--page-table-head-text);
+}
+
+@media (max-width: 768px) {
+  .dimension-table-wrapper {
+    padding: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .dimension-table-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dimension-table-body {
+    min-width: 560px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .dimension-table-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dimension-table-scroll {
+    min-width: 340px;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .dimension-table-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dimension-table-content {
+    min-width: 360px;
+    font-size: 11px;
+  }
+
+  .print-table-total-summary-card {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .print-table-total-summary-card::-webkit-scrollbar {
+    display: none;
+  }
+
+  .print-table-total-summary-item {
+    min-width: 120px;
+  }
+}
+
+.dimension-common-rate-panel {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.dimension-common-rate-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--page-text-soft);
+}
+
+.dimension-common-rate-input {
+  width: 140px;
+  border: 1px solid var(--page-line);
+  border-radius: 4px;
+  background: var(--page-bg);
+  color: var(--page-text);
+  padding: 8px 10px;
+  font-size: 12px;
+  outline: none;
 }
 
 .table-title-editor {
@@ -83,11 +249,16 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 8px;
+  width: 100%;
+  min-width: 0;
+  overflow: visible;
+  height: auto;
 }
 
 .print-table-total-summary-card {
   display: flex;
-  flex-wrap: wrap;
+  font-size: 8px;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
@@ -96,11 +267,16 @@
   border: 1px solid var(--page-line);
   background: var(--page-summary-bg);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+  height: auto;
 }
 
 .print-table-total-summary-item {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   flex-wrap: nowrap;
   gap: 6px;
   padding: 4px 8px;
@@ -108,6 +284,9 @@
   background: var(--page-bg);
   white-space: nowrap;
   min-width: 140px;
+  min-height: 30px;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .print-table-total-label {
@@ -236,6 +415,35 @@
   word-break: break-word;
 }
 
+.preview-mode .dimension-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  overflow-x: visible;
+}
+
+.preview-mode .dimension-table-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-width: 100%;
+  overflow-x: visible;
+}
+
+.preview-mode .dimension-table-scroll {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 100%;
+  overflow-x: visible;
+}
+
+.preview-mode .dimension-table-content {
+  width: 100%;
+  min-width: 100%;
+  table-layout: fixed;
+}
+
 .preview-mode .print-table {
   display: block !important;
   width: 100% !important;
@@ -312,6 +520,62 @@
 .preview-mode .print-table tbody td:nth-child(9) {
   background: #eef7ff !important;
   color: #0f172a !important;
+}
+
+.preview-mode .print-table-total-summary {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.preview-mode .print-table-total-summary-card {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.preview-mode .print-table-total-summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+  white-space: nowrap;
+  min-width: 140px;
+  min-height: 30px;
+  line-height: 1;
+}
+
+.preview-mode .print-table-total-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.preview-mode .print-table-total-value {
+  font-size: 12px;
+  font-weight: 800;
+  color: #111827;
+  white-space: nowrap;
+  min-width: 84px;
+  text-align: left;
+  line-height: 1;
 }
 
 .preview-mode .print-table th,

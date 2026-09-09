@@ -11,7 +11,7 @@ export default function DimensionRow({
   const area = calculateArea(row);
   const amount = calculateAmount(row);
   const inputClass =
-    "bg-transparent px-1 py-1 text-sm text-center outline-none focus:bg-blue-50";
+    "dimension-table-cell-input bg-transparent px-1 py-1 text-sm text-center outline-none focus:bg-blue-50";
 
   return (
     <tr className="hover:bg-gray-50">
@@ -23,12 +23,11 @@ export default function DimensionRow({
       {descriptionEnabled && (
         <td className="border border-gray-300 p-0 -nowrap">
           <input
-
             type="text"
             value={row.description}
             onChange={(e) => updateRow(index, "description", e.target.value)}
             placeholder=""
-            className="bg-transparent px-1 py-1 text-sm outline-none focus:bg-blue-50"
+            className="dimension-table-description-input bg-transparent px-1 py-1 text-sm outline-none focus:bg-blue-50"
             style={{ width: "80px" }}
           />
         </td>
