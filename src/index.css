@@ -92,6 +92,17 @@
   min-width: 80px;
 }
 
+.dimension-table-content input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.dimension-table-content input[type="number"]::-webkit-inner-spin-button,
+.dimension-table-content input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .table-summary-toggle-row {
   display: flex;
   justify-content: flex-end;
@@ -226,6 +237,172 @@
   outline: none;
 }
 
+.table-settings-switch-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.table-settings-button {
+  border: 1px solid var(--page-line);
+  background: var(--page-bg);
+  color: var(--page-text-soft);
+  padding: 6px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.table-add-row-inline {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.table-add-row-inline button {
+  font-size: 11px;
+  padding: 6px 11px;
+  border-radius: 6px;
+}
+
+.table-editor-heading {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--page-line);
+  background: var(--page-summary-bg);
+  color: var(--page-text-soft);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.table-editor-heading-text {
+  display: inline-block;
+}
+
+.table-editor-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-top-actions {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.table-top-actions-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.amount-collected-panel,
+.additional-cost-panel {
+  margin-top: 12px;
+}
+
+.payment-add-row-inline {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.payment-add-row-inline button {
+  font-size: 11px;
+  padding: 6px 11px;
+  border-radius: 6px;
+}
+
+.amount-collected-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--page-line);
+  border-radius: 8px;
+  background: var(--page-bg);
+}
+
+.amount-collected-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.amount-collected-entry-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.additional-cost-block {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--page-line);
+  border-radius: 8px;
+  background: var(--page-bg);
+}
+
+.additional-cost-panel .mb-2 {
+  width: 100%;
+}
+
+.table-settings-editor-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.table-config-open-row {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.table-config-open-button,
+.table-config-hide-button {
+  border: 1px solid var(--page-line);
+  background: var(--page-bg);
+  color: var(--page-text-soft);
+  padding: 6px 11px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.table-config-hide-button {
+  margin-left: 6px;
+}
+
 .print-table-title-bar {
   width: fit-content;
   max-width: 100%;
@@ -310,6 +487,7 @@
 .pdf-only { display: none; }
 .print-header { display: none; }
 .print-address-section { display: none; }
+.print-payment-details { display: none; }
 .print-payment-summary { display: none; }
 
 .preview-mode {
@@ -754,6 +932,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 10px;
   padding: 12px 14px;
   background: #f8fafc;
   border-bottom: 1px solid #d1d5db;
@@ -775,6 +954,10 @@
 }
 
 @media print {
+  .preview-home-bar {
+    display: none !important;
+  }
+
   @page {
     size: A4 portrait;
     margin: 8mm;
@@ -896,6 +1079,20 @@
     word-break: break-word;
   }
 
+  .print-table-title-bar {
+    background: #1e3a5f !important;
+    color: #ffffff !important;
+    border-left: 3px solid #93c5fd !important;
+    border-radius: 6px 6px 0 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .print-table-title-text {
+    color: #ffffff !important;
+  }
+
   .print-table {
     display: block !important;
     width: 100% !important;
@@ -964,6 +1161,15 @@
     print-color-adjust: exact !important;
   }
 
+  .print-table .dimension-table-content thead tr:first-child th,
+  .print-table .dimension-table-content thead tr:nth-child(2) th,
+  .print-table .dimension-table-content thead th {
+    color: var(--page-table-head-text) !important;
+    background: var(--page-table-head-bg) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   .print-table tbody td {
     font-size: 11px !important;
     color: var(--page-text) !important;
@@ -1006,6 +1212,33 @@
     background: transparent !important;
     color: var(--page-text) !important;
     font-family: "Calibri", "Arial", sans-serif;
+  }
+
+  .print-payment-details {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    margin: 16px 0 0;
+    padding: 14px 14px 12px;
+    color: var(--page-text);
+    background: var(--page-bg);
+    border: 1px solid var(--page-line);
+    font-size: 12px;
+    line-height: 1.5;
+    font-family: "Calibri", "Arial", sans-serif;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-sizing: border-box;
+  }
+
+  .print-payment-details .print-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--page-text);
+  }
+
+  .print-payment-details .print-section-line {
+    margin-bottom: 12px;
   }
 
   .print-payment-summary {
@@ -1070,6 +1303,22 @@
 
   .print-payment-summary-block {
     margin: 12px 0 0;
+  }
+
+  .print-payment-detail-panel {
+    margin: 12px 0 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--page-line);
+    border-radius: 8px;
+    background: var(--page-bg);
+  }
+
+  .print-payment-summary-panel {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--page-line);
+    border-radius: 8px;
+    background: var(--page-summary-bg);
   }
 
   .print-summary-table {

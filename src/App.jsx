@@ -1,7 +1,6 @@
 import { useState } from "react";
 import PrintHeader from "./components/PrintHeader";
 import DimensionTable from "./components/DimensionTable";
-import AddRowButton from "./components/AddRowButton";
 import TotalArea from "./components/TotalArea";
 
 import {
@@ -31,10 +30,11 @@ const formatCurrency = (value) => currencyFormatter.format(Number(value || 0));
 
 export default function App() {
   const [tables, setTables] = useState([{ rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
-  const [descriptionEnabled, setDescriptionEnabled] = useState(true);
+  const [descriptionEnabled, setDescriptionEnabled] = useState(false);
   const [rateEnabled, setRateEnabled] = useState(false);
   const [letterheadEnabled, setLetterheadEnabled] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
   const [siteAddress, setSiteAddress] = useState("");
   const [workDescription, setWorkDescription] = useState("");
   const [panNumber, setPanNumber] = useState("");
@@ -42,8 +42,7 @@ export default function App() {
   const [dateMode, setDateMode] = useState("current");
   const [manualDate, setManualDate] = useState("");
   const [costRows, setCostRows] = useState([]);
-  const [collectedAmount, setCollectedAmount] = useState("");
-  const [collectedDescription, setCollectedDescription] = useState("");
+  const [collectedRows, setCollectedRows] = useState([{ amount: "", description: "" }]);
 
   const offsetDate = new Date();
   const timezoneOffset = offsetDate.getTimezoneOffset();
@@ -113,6 +112,28 @@ export default function App() {
     ]);
   };
 
+  const addCollectedAmount = () => {
+    setCollectedRows((currentRows) => [
+      ...currentRows,
+      { amount: "", description: "" },
+    ]);
+  };
+
+  const updateCollectedRow = (index, field, value) => {
+    setCollectedRows((currentRows) => {
+      const updatedRows = [...currentRows];
+      updatedRows[index] = {
+        ...updatedRows[index],
+        [field]: value,
+      };
+      return updatedRows;
+    });
+  };
+
+  const removeCollectedRow = (index) => {
+    setCollectedRows((currentRows) => currentRows.filter((_, rowIndex) => rowIndex !== index));
+  };
+
   const updateCost = (index, field, value) => {
     setCostRows((currentRows) => {
       const updatedRows = [...currentRows];
@@ -132,6 +153,10 @@ export default function App() {
     (cost) => (cost.name || "").trim().length > 0 || Number(cost.amount || 0) > 0,
   );
 
+  const printableCollectedRows = collectedRows.filter(
+    (row) => (row.description || "").trim().length > 0 || Number(row.amount || 0) > 0,
+  );
+
   const updateCommonRate = (tableIndex, value) => {
     setTables((currentTables) =>
       currentTables.map((table, index) =>
@@ -148,6 +173,34 @@ export default function App() {
     );
   };
 
+  const handlePrint = () => {
+    const serializedTables = JSON.stringify(tables);
+    const printingTables = tables.map((table) => ({
+      ...table,
+      rows: table.rows.map((row) => ({
+        ...row,
+        feet1: row.feet1 || "0",
+        inch1: row.inch1 || "0",
+        feet2: row.feet2 || "0",
+        inch2: row.inch2 || "0",
+      })),
+    }));
+
+    setTables(printingTables);
+    setIsPrinting(true);
+
+    const restoreAfterPrint = () => {
+      setTables(JSON.parse(serializedTables));
+      setIsPrinting(false);
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("afterprint", restoreAfterPrint, { once: true });
+    }
+
+    window.print();
+  };
+
   const resetAll = () => {
     setTables([{ rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
     setDescriptionEnabled(true);
@@ -161,13 +214,16 @@ export default function App() {
     setDateMode("current");
     setManualDate("");
     setCostRows([]);
-    setCollectedAmount("");
-    setCollectedDescription("");
+    setCollectedRows([{ amount: "", description: "" }]);
   };
 
-  const resetTableOnly = () => {
+  const resetTableOnly = (tableIndex = -1) => {
     setTables((currentTables) =>
-      currentTables.map((table) => ({ ...table, rows: [{ ...EMPTY_ROW }], commonRate: table.commonRate || "" })),
+      currentTables.map((table, index) =>
+        index === tableIndex
+          ? { ...table, rows: [{ ...EMPTY_ROW }], commonRate: table.commonRate || "", title: table.title || "" }
+          : table,
+      ),
     );
   };
 
@@ -182,8 +238,10 @@ export default function App() {
   }, 0);
 
   const grandTotal = totalAmount + additionalChargesTotal;
-  const collectedValue = Number.parseFloat(collectedAmount || 0);
-  const collectedToUse = Number.isFinite(collectedValue) ? collectedValue : 0;
+  const collectedToUse = collectedRows.reduce((sum, row) => {
+    const numericAmount = Number.parseFloat(row.amount || 0);
+    return sum + (Number.isFinite(numericAmount) ? numericAmount : 0);
+  }, 0);
   const pendingAmount = Math.max(grandTotal - collectedToUse, 0);
   const excessAmount = Math.max(collectedToUse - grandTotal, 0);
 
@@ -226,7 +284,7 @@ export default function App() {
               {showPreview ? "Hide Preview" : "Preview"}
             </button>
             <button
-              onClick={() => window.print()}
+              onClick={handlePrint}
               className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
             >
               🖨 Print
@@ -327,6 +385,13 @@ export default function App() {
             >
               Home
             </button>
+            <button
+              type="button"
+              onClick={handlePrint}
+              className="preview-home-button"
+            >
+              Print
+            </button>
           </section>
         )}
 
@@ -357,123 +422,9 @@ export default function App() {
             </section>
           )}
 
-          <div className="print-table">
-            {tables.map((table, tableIndex) => (
-              <div className="mb-3" key={`table-${tableIndex}`}>
-                <DimensionTable
-                  rows={table.rows}
-                  updateRow={(rowIndex, field, value) => updateRow(tableIndex, rowIndex, field, value)}
-                  removeRow={(rowIndex) => removeRow(tableIndex, rowIndex)}
-                  descriptionEnabled={descriptionEnabled}
-                  rateEnabled={rateEnabled}
-                  commonRate={table.commonRate}
-                  setCommonRate={(value) => updateCommonRate(tableIndex, value)}
-                  showCommonRateInput={!rateEnabled}
-                  tableTitle={table.title || ""}
-                  setTableTitle={(value) => updateTableTitle(tableIndex, value)}
-                  showPreview={showPreview}
-                />
-              </div>
-            ))}
-
-            <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} tables={tables} />
-          </div>
-
-          <section className="print-payment-summary">
-            <h3 className="print-section-title">PAYMENT DETAILS</h3>
-            <div className="print-section-line" />
-
-            {printableCostRows.length > 0 && (
-              <div className="print-payment-summary-block">
-                <div className="print-payment-subtitle">ADDITIONAL CHARGES</div>
-
-                <table className="print-summary-table print-charge-table">
-                  <thead>
-                    <tr>
-                      <th>Charge</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {printableCostRows.map((cost, index) => (
-                      <tr key={`print-cost-${index}`}>
-                        <td>
-                          <span className="print-cost-name">{(cost.name || "Charge").trim()}</span>
-                          {(cost.detail || "").trim() && (
-                            <small className="print-cost-detail"> — {cost.detail}</small>
-                          )}
-                        </td>
-                        <td className="print-summary-amount">{formatCurrency(cost.amount || 0)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="print-summary-total">
-                      <td>TOTAL ADDITIONAL CHARGES</td>
-                      <td className="print-summary-amount">{formatCurrency(additionalChargesTotal)}</td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            )}
-
-            <div className="print-payment-summary-block print-payment-breakdown">
-              <div className="print-payment-subtitle">PAYMENT SUMMARY</div>
-
-              <table className="print-summary-table print-payment-table">
-                <thead>
-                  <tr>
-                    <th>Description</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Total Work Amount</td>
-                    <td className="print-summary-amount">{formatCurrency(totalAmount)}</td>
-                  </tr>
-                  <tr>
-                    <td>Total Additional Amount</td>
-                    <td className="print-summary-amount">{formatCurrency(additionalChargesTotal)}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <span className="print-cost-name">Amount Already Collected</span>
-                      {(collectedDescription || "").trim() && (
-                        <small className="print-cost-detail"> — {collectedDescription.trim()}</small>
-                      )}
-                    </td>
-                    <td className="print-summary-amount">{formatCurrency(collectedToUse)}</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div className="print-payment-status-block">
-                <div className="print-payment-status-row">
-                  <span className="print-payment-status-label">Payment Status:</span>
-                  <span className="print-payment-status-value">{paymentStatus}</span>
-                </div>
-
-                <div className="print-payment-status-row print-payment-amount-pending">
-                  <span className="print-payment-status-label">AMOUNT PENDING</span>
-                  <span className="print-payment-status-value">{formatCurrency(pendingAmount)}</span>
-                </div>
-              </div>
-
-              {excessAmount > 0 && (
-                <div className="print-payment-row print-payment-excess-row">
-                  <span className="print-payment-label">Excess Amount :</span>
-                  <span className="print-payment-value">{formatCurrency(excessAmount)}</span>
-                </div>
-              )}
-            </div>
-          </section>
-        </div>
-
-        <section className="no-print border-t border-gray-300 bg-gray-50 p-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <AddRowButton onClick={() => addRow(tables.length - 1)} />
+          <div className="no-print table-editor-heading">
+            <span className="table-editor-heading-text">Table Work Area</span>
+            <div className="table-editor-heading-actions">
               <button
                 type="button"
                 onClick={addTable}
@@ -491,77 +442,267 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-end gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-medium text-gray-700">Amount Already Collected / Paid</span>
-              <input
-                type="number"
-                min="0"
-                className="w-36 rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
-                value={collectedAmount}
-                onChange={(event) => setCollectedAmount(event.target.value)}
-                placeholder="₹ 0"
-              />
-              <input
-                type="text"
-                className="w-40 rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-gray-800"
-                value={collectedDescription}
-                onChange={(event) => setCollectedDescription(event.target.value)}
-                placeholder="Description"
-              />
+          <div className="print-table">
+            {tables.map((table, tableIndex) => (
+              <div className="mb-3" key={`table-${tableIndex}`}>
+                <DimensionTable
+                  rows={table.rows}
+                  updateRow={(rowIndex, field, value) => updateRow(tableIndex, rowIndex, field, value)}
+                  removeRow={(rowIndex) => removeRow(tableIndex, rowIndex)}
+                  addRow={() => addRow(tableIndex)}
+                  resetTable={() => resetTableOnly(tableIndex)}
+                  descriptionEnabled={descriptionEnabled}
+                  rateEnabled={rateEnabled}
+                  commonRate={table.commonRate}
+                  setCommonRate={(value) => updateCommonRate(tableIndex, value)}
+                  showCommonRateInput={!rateEnabled}
+                  tableTitle={table.title || ""}
+                  setTableTitle={(value) => updateTableTitle(tableIndex, value)}
+                  showPreview={showPreview}
+                  isPrinting={isPrinting}
+                />
+              </div>
+            ))}
+
+            <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} tables={tables} />
+          </div>
+
+          {(printableCostRows.length > 0 || printableCollectedRows.length > 0) && (
+            <section className="print-payment-details">
+              <h3 className="print-section-title">PAYMENT DETAILS</h3>
+              <div className="print-section-line" />
+
+              <div className="print-payment-detail-panel">
+                {printableCostRows.length > 0 && (
+                  <div className="print-payment-summary-block">
+                    <div className="print-payment-subtitle">ADDITIONAL CHARGES</div>
+
+                    <table className="print-summary-table print-charge-table">
+                      <thead>
+                        <tr>
+                          <th>Charge</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {printableCostRows.map((cost, index) => (
+                          <tr key={`print-cost-${index}`}>
+                            <td>
+                              <span className="print-cost-name">{(cost.name || "Charge").trim()}</span>
+                              {(cost.detail || "").trim() && (
+                                <small className="print-cost-detail"> — {cost.detail}</small>
+                              )}
+                            </td>
+                            <td className="print-summary-amount">{formatCurrency(cost.amount || 0)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="print-summary-total">
+                          <td>TOTAL ADDITIONAL CHARGES</td>
+                          <td className="print-summary-amount">{formatCurrency(additionalChargesTotal)}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
+
+                {printableCollectedRows.length > 0 && (
+                  <div className="print-payment-summary-block">
+                    <div className="print-payment-subtitle">AMOUNT ALREADY COLLECTED</div>
+
+                    <table className="print-summary-table print-charge-table">
+                      <thead>
+                        <tr>
+                          <th>Description</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {printableCollectedRows.map((row, index) => (
+                          <tr key={`print-collected-${index}`}>
+                            <td>
+                              <span className="print-cost-name">{(row.description || "Collected Amount").trim()}</span>
+                            </td>
+                            <td className="print-summary-amount">{formatCurrency(row.amount || 0)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="print-summary-total">
+                          <td>TOTAL AMOUNT ALREADY COLLECTED</td>
+                          <td className="print-summary-amount">{formatCurrency(collectedToUse)}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          {(printableCostRows.length > 0 || printableCollectedRows.length > 0 || totalAmount > 0 || additionalChargesTotal > 0 || collectedToUse > 0) && (
+            <section className="print-payment-summary">
+              <h3 className="print-section-title">PAYMENT SUMMARY</h3>
+              <div className="print-section-line" />
+
+              <div className="print-payment-summary-panel">
+                <div className="print-payment-summary-block print-payment-breakdown">
+                  <div className="print-payment-subtitle">PAYMENT SUMMARY</div>
+
+                  <table className="print-summary-table print-payment-table">
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Total Work Amount</td>
+                        <td className="print-summary-amount">{formatCurrency(totalAmount)}</td>
+                      </tr>
+                      <tr>
+                        <td>Total Additional Charges</td>
+                        <td className="print-summary-amount">{formatCurrency(additionalChargesTotal)}</td>
+                      </tr>
+                      <tr>
+                        <td>Total Amount Already Collected</td>
+                        <td className="print-summary-amount">{formatCurrency(collectedToUse)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div className="print-payment-status-block">
+                    <div className="print-payment-status-row">
+                      <span className="print-payment-status-label">Payment Status:</span>
+                      <span className="print-payment-status-value">{paymentStatus}</span>
+                    </div>
+
+                    <div className="print-payment-status-row print-payment-amount-pending">
+                      <span className="print-payment-status-label">AMOUNT PENDING</span>
+                      <span className="print-payment-status-value">{formatCurrency(pendingAmount)}</span>
+                    </div>
+                  </div>
+
+                  {excessAmount > 0 && (
+                    <div className="print-payment-row print-payment-excess-row">
+                      <span className="print-payment-label">Excess Amount :</span>
+                      <span className="print-payment-value">{formatCurrency(excessAmount)}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+        </div>
+
+        <section className="no-print border-t border-gray-300 bg-gray-50 p-3">
+          <div className="amount-collected-panel">
+            <div className="amount-collected-block">
+              <div className="amount-collected-title-row">
+                <span className="text-sm font-medium text-gray-700">Amount Already Collected / Paid</span>
+              </div>
+
+              {collectedRows.length > 0 && (
+                <div className="space-y-2">
+                  {collectedRows.map((row, index) => (
+                    <div key={`collected-${index}`} className="amount-collected-entry-row">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
+                        value={row.amount}
+                        onChange={(event) => updateCollectedRow(index, "amount", event.target.value)}
+                        placeholder="Amount"
+                      />
+                      <input
+                        type="text"
+                        className="min-w-[180px] rounded border border-gray-300 px-2 py-1 text-sm"
+                        value={row.description}
+                        onChange={(event) => updateCollectedRow(index, "description", event.target.value)}
+                        placeholder="Detail"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeCollectedRow(index)}
+                        className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="payment-add-row-inline">
+                <button
+                  type="button"
+                  onClick={addCollectedAmount}
+                  className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  + Add
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="mt-4 rounded border border-gray-300 bg-white p-3">
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <div className="text-sm font-semibold text-gray-700">Additional Costs</div>
-              <button
-                type="button"
-                onClick={addCost}
-                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-              >
-                + Add Cost
-              </button>
-            </div>
-
-            {costRows.length > 0 && (
-              <div className="space-y-2">
-                {costRows.map((cost, index) => (
-                  <div key={`cost-${index}`} className="flex flex-wrap items-center gap-2">
-                    <input
-                      type="text"
-                      className="min-w-[160px] rounded border border-gray-300 px-2 py-1 text-sm"
-                      placeholder="Cost Name"
-                      value={cost.name}
-                      onChange={(event) => updateCost(index, "name", event.target.value)}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
-                      placeholder="Amount"
-                      value={cost.amount}
-                      onChange={(event) => updateCost(index, "amount", event.target.value)}
-                    />
-                    <input
-                      type="text"
-                      className="min-w-[180px] rounded border border-gray-300 px-2 py-1 text-sm"
-                      placeholder="Detail (optional)"
-                      value={cost.detail || ""}
-                      onChange={(event) => updateCost(index, "detail", event.target.value)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeCost(index)}
-                      className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
+          <div className="additional-cost-panel">
+            <div className="additional-cost-block">
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                <div className="text-sm font-semibold text-gray-700">Additional Costs</div>
               </div>
-            )}
+
+              {costRows.length > 0 && (
+                <div className="space-y-2">
+                  {costRows.map((cost, index) => (
+                    <div key={`cost-${index}`} className="flex flex-wrap items-center gap-2">
+                      <input
+                        type="text"
+                        className="min-w-[160px] rounded border border-gray-300 px-2 py-1 text-sm"
+                        placeholder="Cost Name"
+                        value={cost.name}
+                        onChange={(event) => updateCost(index, "name", event.target.value)}
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className="w-32 rounded border border-gray-300 px-2 py-1 text-sm"
+                        placeholder="Amount"
+                        value={cost.amount}
+                        onChange={(event) => updateCost(index, "amount", event.target.value)}
+                      />
+                      <input
+                        type="text"
+                        className="min-w-[180px] rounded border border-gray-300 px-2 py-1 text-sm"
+                        placeholder="Detail (optional)"
+                        value={cost.detail || ""}
+                        onChange={(event) => updateCost(index, "detail", event.target.value)}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeCost(index)}
+                        className="rounded border border-gray-300 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="payment-add-row-inline">
+                <button
+                  type="button"
+                  onClick={addCost}
+                  className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  + Add Cost
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 

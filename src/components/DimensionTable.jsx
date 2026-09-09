@@ -1,5 +1,6 @@
 import { useState } from "react";
 import DimensionRow from "./DimensionRow";
+import AddRowButton from "./AddRowButton";
 import {
   calculateTotal,
   calculateTotalAmount,
@@ -17,6 +18,8 @@ export default function DimensionTable({
   rows,
   updateRow,
   removeRow,
+  addRow,
+  resetTable,
   descriptionEnabled,
   rateEnabled,
   commonRate,
@@ -25,27 +28,75 @@ export default function DimensionTable({
   tableTitle = "",
   setTableTitle,
   showPreview = false,
+  isPrinting = false,
 }) {
   const tableArea = calculateTotal(rows);
   const tableAmount = rateEnabled
     ? calculateTotalAmount(rows)
     : calculateCommonRateAmount(rows, commonRate);
   const [showSummary, setShowSummary] = useState(showPreview);
+  const [showTitleEditor, setShowTitleEditor] = useState(false);
+  const [showRateEditor, setShowRateEditor] = useState(false);
+
+  const closeEditors = () => {
+    setShowTitleEditor(false);
+    setShowRateEditor(false);
+  };
 
   return (
-    <div className="dimension-table-wrapper">
-      <div className="table-title-editor no-print">
-        <label className="table-title-editor-label">Table Header</label>
-        <input
-          type="text"
-          className="table-title-editor-input"
-          value={tableTitle}
-          onChange={(event) => setTableTitle?.(event.target.value)}
-          placeholder="e.g. Kitchen Work"
-        />
+    <div className="dimension-table-wrapper" onClick={closeEditors}>
+      <div className="no-print table-settings-switch-row" onClick={(event) => event.stopPropagation()}>
+        <button
+          type="button"
+          className="table-settings-button"
+          onClick={() => {
+            setShowTitleEditor((value) => !value);
+            setShowRateEditor(false);
+          }}
+        >
+          {showTitleEditor ? "Hide Header" : "Set Header"}
+        </button>
 
         {!rateEnabled && showCommonRateInput && (
-          <div className="dimension-common-rate-panel no-print">
+          <button
+            type="button"
+            className="table-settings-button"
+            onClick={() => {
+              setShowRateEditor((value) => !value);
+              setShowTitleEditor(false);
+            }}
+          >
+            {showRateEditor ? "Hide Rate" : "Set Common Rate"}
+          </button>
+        )}
+
+        {!showPreview && (
+          <button
+            type="button"
+            className="table-settings-button"
+            onClick={() => setShowSummary((value) => !value)}
+          >
+            {showSummary ? "Hide Totals" : "Show Totals"}
+          </button>
+        )}
+      </div>
+
+      <div className="table-settings-editor-stack no-print" onClick={(event) => event.stopPropagation()}>
+        {showTitleEditor && (
+          <div className="table-title-editor no-print">
+            <label className="table-title-editor-label">Table Header</label>
+            <input
+              type="text"
+              className="table-title-editor-input"
+              value={tableTitle}
+              onChange={(event) => setTableTitle?.(event.target.value)}
+              placeholder="e.g. Kitchen Work"
+            />
+          </div>
+        )}
+
+        {showRateEditor && !rateEnabled && showCommonRateInput && (
+          <div className="table-title-editor no-print">
             <span className="dimension-common-rate-label">Common Rate</span>
             <input
               type="number"
@@ -131,6 +182,8 @@ export default function DimensionTable({
                   removeRow={(rowIndex) => removeRow(rowIndex)}
                   descriptionEnabled={descriptionEnabled}
                   rateEnabled={rateEnabled}
+                  showPreview={showPreview}
+                  isPrinting={isPrinting}
                 />
               ))}
             </tbody>
@@ -139,17 +192,16 @@ export default function DimensionTable({
 
       </div>
 
-      {!showPreview && (
-        <div className="no-print table-summary-toggle-row">
-          <button
-            type="button"
-            className="table-summary-toggle"
-            onClick={() => setShowSummary((value) => !value)}
-          >
-            {showSummary ? "Hide Totals" : "Show Totals"}
-          </button>
-        </div>
-      )}
+      <div className="no-print table-add-row-inline">
+        <AddRowButton onClick={addRow} />
+        <button
+          type="button"
+          onClick={resetTable}
+          className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+        >
+          Reset Table
+        </button>
+      </div>
 
       {(showPreview || showSummary) && (
         <div className="print-table-total-summary">

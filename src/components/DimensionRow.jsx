@@ -7,11 +7,16 @@ export default function DimensionRow({
   removeRow,
   descriptionEnabled,
   rateEnabled,
+  showPreview = false,
+  isPrinting = false,
 }) {
   const area = calculateArea(row);
   const amount = calculateAmount(row);
   const inputClass =
     "dimension-table-cell-input bg-transparent px-1 py-1 text-sm text-center outline-none focus:bg-blue-50";
+  const showZeroFallback = showPreview || isPrinting;
+  const displayValue = (field) =>
+    showZeroFallback && !row[field] ? "0" : row[field];
 
   return (
     <tr className="hover:bg-gray-50">
@@ -37,10 +42,9 @@ export default function DimensionRow({
         <input
           type="number"
           min="0"
-          value={row.feet1}
-          onChange={(e) =>
-            updateRow(index, "feet1", e.target.value)
-          }
+          value={displayValue("feet1")}
+          onChange={(e) => updateRow(index, "feet1", e.target.value)}
+          placeholder="0"
           className={inputClass}
         />
       </td>
@@ -50,10 +54,9 @@ export default function DimensionRow({
           type="number"
           min="0"
           max="11"
-          value={row.inch1}
-          onChange={(e) =>
-            updateRow(index, "inch1", e.target.value)
-          }
+          value={displayValue("inch1")}
+          onChange={(e) => updateRow(index, "inch1", e.target.value)}
+          placeholder="0"
           className={inputClass}
         />
       </td>
@@ -62,10 +65,9 @@ export default function DimensionRow({
         <input
           type="number"
           min="0"
-          value={row.feet2}
-          onChange={(e) =>
-            updateRow(index, "feet2", e.target.value)
-          }
+          value={displayValue("feet2")}
+          onChange={(e) => updateRow(index, "feet2", e.target.value)}
+          placeholder="0"
           className={inputClass}
         />
       </td>
@@ -75,10 +77,9 @@ export default function DimensionRow({
           type="number"
           min="0"
           max="11"
-          value={row.inch2}
-          onChange={(e) =>
-            updateRow(index, "inch2", e.target.value)
-          }
+          value={displayValue("inch2")}
+          onChange={(e) => updateRow(index, "inch2", e.target.value)}
+          placeholder="0"
           className={inputClass}
         />
       </td>
