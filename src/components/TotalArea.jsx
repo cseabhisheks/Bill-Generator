@@ -1,3 +1,5 @@
+import { formatCurrency } from "../utils/areaCalculator";
+
 export default function TotalArea({
   totalAmount,
   rateEnabled,
@@ -11,7 +13,7 @@ export default function TotalArea({
         <div className="text-sm font-medium text-gray-600">
           Total Work Amount
           <span className="ml-2 font-bold text-gray-900">
-            ₹{totalAmount.toFixed(2)}
+            {formatCurrency(totalAmount)}
           </span>
         </div>
       ) : (
@@ -20,7 +22,7 @@ export default function TotalArea({
             <div className="text-sm font-medium text-gray-600">
               Rate
               <span className="ml-2 font-bold text-gray-900">
-                ₹{Number(commonRate).toFixed(2)} / sq. ft.
+                {formatCurrency(commonRate)} / sq. ft.
               </span>
             </div>
           )}
@@ -28,7 +30,7 @@ export default function TotalArea({
           <div className="text-sm font-medium text-gray-600">
             Total Work Amount
             <span className="ml-2 font-bold text-gray-900">
-              ₹{totalAmount.toFixed(2)}
+              {formatCurrency(totalAmount)}
             </span>
           </div>
         </div>

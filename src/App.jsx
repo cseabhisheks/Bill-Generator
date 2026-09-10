@@ -41,6 +41,8 @@ export default function App() {
   const [manualDate, setManualDate] = useState("");
   const [costRows, setCostRows] = useState([]);
   const [collectedRows, setCollectedRows] = useState([{ amount: "", description: "" }]);
+  const [showPaymentSummary, setShowPaymentSummary] = useState(true);
+  const [showPaymentDetails, setShowPaymentDetails] = useState(true);
 
   const offsetDate = new Date();
   const timezoneOffset = offsetDate.getTimezoneOffset();
@@ -335,6 +337,8 @@ export default function App() {
     setDescriptionEnabled(true);
     setRateEnabled(false);
     setLetterheadEnabled(true);
+    setShowPaymentSummary(true);
+    setShowPaymentDetails(true);
     setShowPreview(false);
     setSiteAddress("");
     setWorkDescription("");
@@ -392,32 +396,47 @@ export default function App() {
           <p className="text-xs text-gray-500">Enter feet and inches</p>
         </header>
 
-        <div className="no-print flex flex-wrap items-center gap-5 border-b border-gray-300 bg-gray-50 px-3 py-2">
-          <Toggle label="Description" enabled={descriptionEnabled} onChange={setDescriptionEnabled} />
-          <Toggle label="Rate" enabled={rateEnabled} onChange={setRateEnabled} />
-          <Toggle label="Letterhead" enabled={letterheadEnabled} onChange={setLetterheadEnabled} />
+        <div className="no-print border-b border-gray-300 bg-gray-50 px-3 py-2.5">
+          <div className="flex flex-wrap items-center gap-5">
+            <Toggle label="Description" enabled={descriptionEnabled} onChange={setDescriptionEnabled} />
+            <Toggle label="Rate" enabled={rateEnabled} onChange={setRateEnabled} />
+            <Toggle label="Letterhead" enabled={letterheadEnabled} onChange={setLetterheadEnabled} />
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={resetAll}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              Reset
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowPreview(!showPreview)}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              {showPreview ? "Hide Preview" : "Preview"}
-            </button>
-            <button
-              onClick={handlePrint}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
-              🖨 Print
-            </button>
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={resetAll}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowPreview(!showPreview)}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                {showPreview ? "Hide Preview" : "Preview"}
+              </button>
+              <button
+                onClick={handlePrint}
+                className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+              >
+                🖨 Print
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-2.5 flex flex-wrap items-center gap-6 border-t border-gray-200 pt-2">
+            <Toggle
+              label="Show Payment Summary"
+              enabled={showPaymentSummary}
+              onChange={setShowPaymentSummary}
+            />
+            <Toggle
+              label="Payment Details"
+              enabled={showPaymentDetails}
+              onChange={setShowPaymentDetails}
+            />
           </div>
         </div>
 
@@ -601,7 +620,7 @@ export default function App() {
             <TotalArea total={totalArea} totalAmount={totalAmount} rateEnabled={rateEnabled} tables={tables} />
           </div>
 
-          {(printableCostRows.length > 0 || printableCollectedRows.length > 0) && (
+          {showPaymentDetails && (printableCostRows.length > 0 || printableCollectedRows.length > 0) && (
             <section className="print-payment-details">
               <h3 className="print-section-title">PAYMENT DETAILS</h3>
               <div className="print-section-line" />
@@ -675,7 +694,7 @@ export default function App() {
             </section>
           )}
 
-          {(printableCostRows.length > 0 || printableCollectedRows.length > 0 || totalAmount > 0 || additionalChargesTotal > 0 || collectedToUse > 0) && (
+          {showPaymentSummary && (printableCostRows.length > 0 || printableCollectedRows.length > 0 || totalAmount > 0 || additionalChargesTotal > 0 || collectedToUse > 0) && (
             <section className="print-payment-summary">
               <h3 className="print-section-title">PAYMENT SUMMARY</h3>
               <div className="print-section-line" />

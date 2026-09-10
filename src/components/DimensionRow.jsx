@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { calculateArea, calculateAmount, getDimensions } from "../utils/areaCalculator";
+import { calculateArea, calculateAmount, getDimensions, formatCurrency } from "../utils/areaCalculator";
 
 export default function DimensionRow({
   row,
@@ -7,8 +7,6 @@ export default function DimensionRow({
   pairCount,
   updateRow,
   updateDimension,
-  addDimension,
-  removeDimension,
   removeRow,
   descriptionEnabled,
   rateEnabled,
@@ -97,35 +95,10 @@ export default function DimensionRow({
           </td>
 
           <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-center">
-            ₹{amount.toFixed(2)}
+            {formatCurrency(amount)}
           </td>
         </>
       )}
-
-      <td className="no-print w-16 border border-gray-300 p-0 text-center">
-        <div className="flex items-center justify-center gap-1">
-          <button
-            type="button"
-            onClick={() => addDimension(index)}
-            className="h-7 w-7 text-gray-500 hover:bg-blue-50 hover:text-blue-600 font-bold text-sm"
-            title="Add Unit"
-            aria-label="Add Unit"
-          >
-            +
-          </button>
-          {dimensions.length > 2 && (
-            <button
-              type="button"
-              onClick={() => removeDimension(index, dimensions.length - 1)}
-              className="h-7 w-7 text-gray-500 hover:bg-red-50 hover:text-red-600 font-bold text-sm"
-              title="Remove Unit"
-              aria-label="Remove Unit"
-            >
-              -
-            </button>
-          )}
-        </div>
-      </td>
 
       <td className="no-print w-8 border border-gray-300 p-0 text-center">
         <button

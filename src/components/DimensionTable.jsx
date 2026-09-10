@@ -5,14 +5,8 @@ import {
   calculateTotal,
   calculateTotalAmount,
   calculateCommonRateAmount,
+  formatCurrency,
 } from "../utils/areaCalculator";
-
-const formatCurrency = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 export default function DimensionTable({
   rows,
@@ -37,7 +31,6 @@ export default function DimensionTable({
   const tableAmount = rateEnabled
     ? calculateTotalAmount(rows)
     : calculateCommonRateAmount(rows, commonRate);
-  const [showSummary, setShowSummary] = useState(showPreview);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showRateEditor, setShowRateEditor] = useState(false);
 
@@ -75,16 +68,6 @@ export default function DimensionTable({
             }}
           >
             {showRateEditor ? "Hide Rate" : "Set Common Rate"}
-          </button>
-        )}
-
-        {!showPreview && (
-          <button
-            type="button"
-            className="table-settings-button"
-            onClick={() => setShowSummary((value) => !value)}
-          >
-            {showSummary ? "Hide Totals" : "Show Totals"}
           </button>
         )}
       </div>
@@ -160,10 +143,6 @@ export default function DimensionTable({
                   </>
                 )}
 
-                <th rowSpan="2" className="no-print border border-gray-300 px-1 py-1">
-                  Unit
-                </th>
-
                 <th
                   rowSpan="2"
                   className="no-print border border-gray-300 px-1 py-1"
@@ -193,8 +172,6 @@ export default function DimensionTable({
                   updateDimension={(rowIndex, dimensionIndex, field, value) =>
                     updateDimension(rowIndex, dimensionIndex, field, value)
                   }
-                  addDimension={(rowIndex) => addDimension(rowIndex)}
-                  removeDimension={(rowIndex, dimensionIndex) => removeDimension(rowIndex, dimensionIndex)}
                   removeRow={(rowIndex) => removeRow(rowIndex)}
                   descriptionEnabled={descriptionEnabled}
                   rateEnabled={rateEnabled}
@@ -237,28 +214,24 @@ export default function DimensionTable({
         </button>
       </div>
 
-      {(showPreview || showSummary) && (
-        <div className="print-table-total-summary">
-          <div className="print-table-total-summary-card">
-            {!rateEnabled && (
-              <div className="print-table-total-summary-item">
-                <span className="print-table-total-label">Total Area</span>
-                <span className="print-table-total-value">{tableArea.toFixed(2)} sq. ft.</span>
-              </div>
-            )}
-            {!rateEnabled && (
-              <div className="print-table-total-summary-item">
-                <span className="print-table-total-label">Rate</span>
-                <span className="print-table-total-value">{formatCurrency.format(Number(commonRate || 0))} / sq. ft.</span>
-              </div>
-            )}
+      <div className="print-table-total-summary">
+        <div className="print-table-total-summary-card">
+          <div className="print-table-total-summary-item">
+            <span className="print-table-total-label">Total Area</span>
+            <span className="print-table-total-value">{tableArea.toFixed(2)} sq. ft.</span>
+          </div>
+          {!rateEnabled && (
             <div className="print-table-total-summary-item">
-              <span className="print-table-total-label">Amount</span>
-              <span className="print-table-total-value">{formatCurrency.format(tableAmount)}</span>
+              <span className="print-table-total-label">Rate</span>
+              <span className="print-table-total-value">{formatCurrency(commonRate)} / sq. ft.</span>
             </div>
+          )}
+          <div className="print-table-total-summary-item">
+            <span className="print-table-total-label">Amount</span>
+            <span className="print-table-total-value">{formatCurrency(tableAmount)}</span>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

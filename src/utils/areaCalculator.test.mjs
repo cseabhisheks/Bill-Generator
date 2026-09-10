@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateArea, createEmptyDimension } from './areaCalculator.js';
+import { calculateArea, createEmptyDimension, formatCurrency } from './areaCalculator.js';
 
 test('1. 2 units: converts ft + in to feet and multiplies them together', () => {
   const row = {
@@ -119,4 +119,10 @@ test('7. Changing an existing unit after adding another unit', () => {
   // Change existing unit 1 from 10 ft 6 in to 12 ft 0 in
   row.dimensions[0] = { ft: '12', inch: '0' };
   assert.equal(calculateArea(row), 12 * 5.25 * 2.5); // 157.5
+});
+
+test('8. formatCurrency formats numbers with Indian numbering style and ₹ symbol', () => {
+  assert.equal(formatCurrency(160380), '₹1,60,380.00');
+  assert.equal(formatCurrency(1234567.89), '₹12,34,567.89');
+  assert.equal(formatCurrency(0), '₹0.00');
 });
