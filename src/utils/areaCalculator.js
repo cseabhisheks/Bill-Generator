@@ -1,13 +1,57 @@
+export const createEmptyDimension = () => ({
+  ft: "",
+  inch: "",
+});
+
+export const getDimensions = (row) => {
+  if (Array.isArray(row?.dimensions) && row.dimensions.length > 0) {
+    return row.dimensions;
+  }
+
+  return [
+    {
+      ft: row?.feet1 ?? "",
+      inch: row?.inch1 ?? "",
+    },
+    {
+      ft: row?.feet2 ?? "",
+      inch: row?.inch2 ?? "",
+    },
+  ];
+};
+
 export const calculateArea = (row) => {
-  const length =
-    (Number(row.feet1) || 0) +
-    (Number(row.inch1) || 0) / 12;
+  const dimensions = getDimensions(row);
+  if (!dimensions || dimensions.length === 0) {
+    return 0;
+  }
 
-  const width =
-    (Number(row.feet2) || 0) +
-    (Number(row.inch2) || 0) / 12;
+  let hasAnyInput = false;
+  let product = 1;
 
-  return length * width;
+  for (const dimension of dimensions) {
+    const rawFt = dimension?.ft;
+    const rawInch = dimension?.inch;
+
+    const hasFt = rawFt !== "" && rawFt !== null && rawFt !== undefined;
+    const hasInch = rawInch !== "" && rawInch !== null && rawInch !== undefined;
+
+    if (hasFt || hasInch) {
+      hasAnyInput = true;
+    }
+
+    const ft = Math.max(0, Number.parseFloat(rawFt) || 0);
+    const inch = Math.max(0, Number.parseFloat(rawInch) || 0);
+    const decimalFeet = ft + inch / 12;
+
+    product *= decimalFeet;
+  }
+
+  if (!hasAnyInput) {
+    return 0;
+  }
+
+  return Number.isFinite(product) ? Math.max(0, product) : 0;
 };
 
 export const calculateAmount = (row) => {

@@ -1,22 +1,34 @@
-import { calculateArea, calculateAmount } from "../utils/areaCalculator";
+import { Fragment } from "react";
+import { calculateArea, calculateAmount, getDimensions } from "../utils/areaCalculator";
 
 export default function DimensionRow({
   row,
   index,
+  pairCount,
   updateRow,
+  updateDimension,
+  addDimension,
+  removeDimension,
   removeRow,
   descriptionEnabled,
   rateEnabled,
   showPreview = false,
   isPrinting = false,
 }) {
+  const baseDimensions = getDimensions(row);
+  const targetCount = Math.max(2, pairCount || 2, baseDimensions.length);
+  const dimensions = [...baseDimensions];
+  while (dimensions.length < targetCount) {
+    dimensions.push({ ft: "", inch: "" });
+  }
+
   const area = calculateArea(row);
   const amount = calculateAmount(row);
   const inputClass =
     "dimension-table-cell-input bg-transparent px-1 py-1 text-sm text-center outline-none focus:bg-blue-50";
   const showZeroFallback = showPreview || isPrinting;
-  const displayValue = (field) =>
-    showZeroFallback && !row[field] ? "0" : row[field];
+  const displayValue = (field, dimension) =>
+    showZeroFallback && !dimension[field] ? "0" : dimension[field];
 
   return (
     <tr className="hover:bg-gray-50">
@@ -38,51 +50,32 @@ export default function DimensionRow({
         </td>
       )}
 
-      <td className="border border-gray-300 p-0">
-        <input
-          type="number"
-          min="0"
-          value={displayValue("feet1")}
-          onChange={(e) => updateRow(index, "feet1", e.target.value)}
-          placeholder="0"
-          className={inputClass}
-        />
-      </td>
+      {dimensions.map((dimension, dimensionIndex) => (
+        <Fragment key={`dimension-${index}-${dimensionIndex}`}>
+          <td className="border border-gray-300 p-0">
+            <input
+              type="number"
+              min="0"
+              value={displayValue("ft", dimension)}
+              onChange={(e) => updateDimension(index, dimensionIndex, "ft", e.target.value)}
+              placeholder="0"
+              className={inputClass}
+            />
+          </td>
 
-      <td className="border border-gray-300 p-0">
-        <input
-          type="number"
-          min="0"
-          max="11"
-          value={displayValue("inch1")}
-          onChange={(e) => updateRow(index, "inch1", e.target.value)}
-          placeholder="0"
-          className={inputClass}
-        />
-      </td>
-
-      <td className="border border-gray-300 p-0">
-        <input
-          type="number"
-          min="0"
-          value={displayValue("feet2")}
-          onChange={(e) => updateRow(index, "feet2", e.target.value)}
-          placeholder="0"
-          className={inputClass}
-        />
-      </td>
-
-      <td className="border border-gray-300 p-0">
-        <input
-          type="number"
-          min="0"
-          max="11"
-          value={displayValue("inch2")}
-          onChange={(e) => updateRow(index, "inch2", e.target.value)}
-          placeholder="0"
-          className={inputClass}
-        />
-      </td>
+          <td className="border border-gray-300 p-0">
+            <input
+              type="number"
+              min="0"
+              max="11"
+              value={displayValue("inch", dimension)}
+              onChange={(e) => updateDimension(index, dimensionIndex, "inch", e.target.value)}
+              placeholder="0"
+              className={inputClass}
+            />
+          </td>
+        </Fragment>
+      ))}
 
       <td className="border border-gray-300 bg-gray-50 px-2 py-1 text-center">
         {area.toFixed(2)}
@@ -109,10 +102,38 @@ export default function DimensionRow({
         </>
       )}
 
+      <td className="no-print w-16 border border-gray-300 p-0 text-center">
+        <div className="flex items-center justify-center gap-1">
+          <button
+            type="button"
+            onClick={() => addDimension(index)}
+            className="h-7 w-7 text-gray-500 hover:bg-blue-50 hover:text-blue-600 font-bold text-sm"
+            title="Add Unit"
+            aria-label="Add Unit"
+          >
+            +
+          </button>
+          {dimensions.length > 2 && (
+            <button
+              type="button"
+              onClick={() => removeDimension(index, dimensions.length - 1)}
+              className="h-7 w-7 text-gray-500 hover:bg-red-50 hover:text-red-600 font-bold text-sm"
+              title="Remove Unit"
+              aria-label="Remove Unit"
+            >
+              -
+            </button>
+          )}
+        </div>
+      </td>
+
       <td className="no-print w-8 border border-gray-300 p-0 text-center">
         <button
+          type="button"
           onClick={() => removeRow(index)}
           className="h-7 w-7 text-gray-400 hover:bg-red-50 hover:text-red-500"
+          title="Delete Row"
+          aria-label="Delete Row"
         >
           ×
         </button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import DimensionRow from "./DimensionRow";
 import AddRowButton from "./AddRowButton";
 import {
@@ -18,6 +18,8 @@ export default function DimensionTable({
   rows,
   updateRow,
   removeRow,
+  addDimension,
+  removeDimension,
   addRow,
   resetTable,
   descriptionEnabled,
@@ -29,6 +31,7 @@ export default function DimensionTable({
   setTableTitle,
   showPreview = false,
   isPrinting = false,
+  updateDimension,
 }) {
   const tableArea = calculateTotal(rows);
   const tableAmount = rateEnabled
@@ -37,6 +40,11 @@ export default function DimensionTable({
   const [showSummary, setShowSummary] = useState(showPreview);
   const [showTitleEditor, setShowTitleEditor] = useState(false);
   const [showRateEditor, setShowRateEditor] = useState(false);
+
+  const pairCount = Math.max(
+    2,
+    ...rows.map((row) => (Array.isArray(row.dimensions) ? row.dimensions.length : 2)),
+  );
 
   const closeEditors = () => {
     setShowTitleEditor(false);
@@ -132,16 +140,12 @@ export default function DimensionTable({
                   </th>
                 )}
 
-                <th colSpan="2" className="border border-gray-300 px-1 py-1">
-                  Length
-                </th>
-
-                <th colSpan="2" className="border border-gray-300 px-1 py-1">
-                  Width
+                <th rowSpan="1" colSpan={Math.max(2, pairCount * 2)} className="border border-gray-300 px-1 py-1">
+                  Dimension
                 </th>
 
                 <th rowSpan="2" className="border border-gray-300 px-1 py-1">
-                Area (Sq. Ft.)
+                  Area (Sq. Ft.)
                 </th>
 
                 {rateEnabled && (
@@ -156,6 +160,10 @@ export default function DimensionTable({
                   </>
                 )}
 
+                <th rowSpan="2" className="no-print border border-gray-300 px-1 py-1">
+                  Unit
+                </th>
+
                 <th
                   rowSpan="2"
                   className="no-print border border-gray-300 px-1 py-1"
@@ -165,10 +173,12 @@ export default function DimensionTable({
               </tr>
 
               <tr className="bg-gray-50 text-center text-[11px] text-gray-500">
-                <th className="border border-gray-300 px-1 py-1">Ft</th>
-                <th className="border border-gray-300 px-1 py-1">In</th>
-                <th className="border border-gray-300 px-1 py-1">Ft</th>
-                <th className="border border-gray-300 px-1 py-1">In</th>
+                {Array.from({ length: pairCount }, (_, index) => (
+                  <Fragment key={`dimension-subheader-${index}`}>
+                    <th className="border border-gray-300 px-1 py-1">Ft</th>
+                    <th className="border border-gray-300 px-1 py-1">In</th>
+                  </Fragment>
+                ))}
               </tr>
             </thead>
 
@@ -178,7 +188,13 @@ export default function DimensionTable({
                   key={index}
                   row={row}
                   index={index}
+                  pairCount={pairCount}
                   updateRow={(rowIndex, field, value) => updateRow(rowIndex, field, value)}
+                  updateDimension={(rowIndex, dimensionIndex, field, value) =>
+                    updateDimension(rowIndex, dimensionIndex, field, value)
+                  }
+                  addDimension={(rowIndex) => addDimension(rowIndex)}
+                  removeDimension={(rowIndex, dimensionIndex) => removeDimension(rowIndex, dimensionIndex)}
                   removeRow={(rowIndex) => removeRow(rowIndex)}
                   descriptionEnabled={descriptionEnabled}
                   rateEnabled={rateEnabled}
@@ -194,6 +210,24 @@ export default function DimensionTable({
 
       <div className="no-print table-add-row-inline">
         <AddRowButton onClick={addRow} />
+        <button
+          type="button"
+          onClick={() => addDimension?.()}
+          className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+          id="add-unit-button"
+        >
+          + Add Unit
+        </button>
+        {pairCount > 2 && (
+          <button
+            type="button"
+            onClick={() => removeDimension?.()}
+            className="rounded border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100"
+            id="remove-unit-button"
+          >
+            - Remove Unit
+          </button>
+        )}
         <button
           type="button"
           onClick={resetTable}

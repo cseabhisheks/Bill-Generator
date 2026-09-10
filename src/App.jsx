@@ -7,15 +7,13 @@ import {
   calculateTotal,
   calculateTotalAmount,
   calculateCommonRateAmount,
+  createEmptyDimension,
 } from "./utils/areaCalculator";
 import Toggle from "./components/Toggle";
 
 const EMPTY_ROW = {
   description: "",
-  feet1: "",
-  inch1: "",
-  feet2: "",
-  inch2: "",
+  dimensions: [createEmptyDimension(), createEmptyDimension()],
   rate: "",
 };
 
@@ -75,17 +73,139 @@ export default function App() {
     );
   };
 
+  const updateDimension = (tableIndex, rowIndex, dimensionIndex, field, value) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
+
+        return {
+          ...table,
+          rows: table.rows.map((row, currentRowIndex) => {
+            if (currentRowIndex !== rowIndex) {
+              return row;
+            }
+
+            const dimensions = Array.isArray(row.dimensions) ? [...row.dimensions] : [createEmptyDimension()];
+            if (!dimensions[dimensionIndex]) {
+              dimensions[dimensionIndex] = createEmptyDimension();
+            }
+
+            dimensions[dimensionIndex] = {
+              ...dimensions[dimensionIndex],
+              [field]: value,
+            };
+
+            return {
+              ...row,
+              dimensions,
+            };
+          }),
+        };
+      }),
+    );
+  };
+
+  const addDimension = (tableIndex, rowIndex = null) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
+
+        return {
+          ...table,
+          rows: table.rows.map((row) => {
+            const dimensions = Array.isArray(row.dimensions)
+              ? [...row.dimensions]
+              : [createEmptyDimension(), createEmptyDimension()];
+
+            return {
+              ...row,
+              dimensions: [...dimensions, createEmptyDimension()],
+            };
+          }),
+        };
+      }),
+    );
+  };
+
+  const removeDimension = (tableIndex, rowIndex = null, dimensionIndex = null) => {
+    setTables((currentTables) =>
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
+
+        return {
+          ...table,
+          rows: table.rows.map((row) => {
+            const dimensions = Array.isArray(row.dimensions)
+              ? [...row.dimensions]
+              : [createEmptyDimension(), createEmptyDimension()];
+
+            if (dimensions.length <= 2) {
+              return row;
+            }
+
+            const nextDimensions = [...dimensions];
+            const targetIndex =
+              typeof dimensionIndex === "number" && dimensionIndex >= 0 && dimensionIndex < nextDimensions.length
+                ? dimensionIndex
+                : nextDimensions.length - 1;
+
+            nextDimensions.splice(targetIndex, 1);
+
+            return {
+              ...row,
+              dimensions: nextDimensions,
+            };
+          }),
+        };
+      }),
+    );
+  };
+
   const addTable = () => {
-    setTables((currentTables) => [...currentTables, { rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
+    setTables((currentTables) => [
+      ...currentTables,
+      {
+        rows: [
+          {
+            ...EMPTY_ROW,
+            dimensions: [createEmptyDimension(), createEmptyDimension()],
+          },
+        ],
+        commonRate: "",
+        title: "",
+      },
+    ]);
   };
 
   const addRow = (tableIndex = 0) => {
     setTables((currentTables) =>
-      currentTables.map((table, currentTableIndex) =>
-        currentTableIndex === tableIndex
-          ? { ...table, rows: [...table.rows, { ...EMPTY_ROW }] }
-          : table,
-      ),
+      currentTables.map((table, currentTableIndex) => {
+        if (currentTableIndex !== tableIndex) {
+          return table;
+        }
+
+        const unitCount = Math.max(
+          2,
+          ...table.rows.map((row) => (Array.isArray(row.dimensions) ? row.dimensions.length : 2)),
+        );
+
+        return {
+          ...table,
+          rows: [
+            ...table.rows,
+            {
+              ...EMPTY_ROW,
+              dimensions: Array.from({ length: unitCount }, () => createEmptyDimension()),
+            },
+          ],
+        };
+      }),
     );
   };
 
@@ -99,7 +219,7 @@ export default function App() {
         const nextRows = table.rows.filter((_, index) => index !== rowIndex);
         return {
           ...table,
-          rows: nextRows.length > 0 ? nextRows : [{ ...EMPTY_ROW }],
+          rows: nextRows.length > 0 ? nextRows : [{ ...EMPTY_ROW, dimensions: [createEmptyDimension(), createEmptyDimension()] }],
         };
       }),
     );
@@ -177,13 +297,22 @@ export default function App() {
     const serializedTables = JSON.stringify(tables);
     const printingTables = tables.map((table) => ({
       ...table,
-      rows: table.rows.map((row) => ({
-        ...row,
-        feet1: row.feet1 || "0",
-        inch1: row.inch1 || "0",
-        feet2: row.feet2 || "0",
-        inch2: row.inch2 || "0",
-      })),
+      rows: table.rows.map((row) => {
+        const dimensions = Array.isArray(row.dimensions)
+          ? row.dimensions
+          : [
+              { ft: row.feet1 || "0", inch: row.inch1 || "0" },
+              { ft: row.feet2 || "0", inch: row.inch2 || "0" },
+            ];
+
+        return {
+          ...row,
+          dimensions: dimensions.map((dimension) => ({
+            ft: dimension.ft || "0",
+            inch: dimension.inch || "0",
+          })),
+        };
+      }),
     }));
 
     setTables(printingTables);
@@ -202,7 +331,7 @@ export default function App() {
   };
 
   const resetAll = () => {
-    setTables([{ rows: [{ ...EMPTY_ROW }], commonRate: "", title: "" }]);
+    setTables([{ rows: [{ ...EMPTY_ROW, dimensions: [createEmptyDimension(), createEmptyDimension()] }], commonRate: "", title: "" }]);
     setDescriptionEnabled(true);
     setRateEnabled(false);
     setLetterheadEnabled(true);
@@ -221,7 +350,7 @@ export default function App() {
     setTables((currentTables) =>
       currentTables.map((table, index) =>
         index === tableIndex
-          ? { ...table, rows: [{ ...EMPTY_ROW }], commonRate: table.commonRate || "", title: table.title || "" }
+          ? { ...table, rows: [{ ...EMPTY_ROW, dimensions: [createEmptyDimension(), createEmptyDimension()] }], commonRate: table.commonRate || "", title: table.title || "" }
           : table,
       ),
     );
@@ -448,6 +577,11 @@ export default function App() {
                 <DimensionTable
                   rows={table.rows}
                   updateRow={(rowIndex, field, value) => updateRow(tableIndex, rowIndex, field, value)}
+                  updateDimension={(rowIndex, dimensionIndex, field, value) =>
+                    updateDimension(tableIndex, rowIndex, dimensionIndex, field, value)
+                  }
+                  addDimension={(rowIndex) => addDimension(tableIndex, rowIndex)}
+                  removeDimension={(rowIndex, dimensionIndex) => removeDimension(tableIndex, rowIndex, dimensionIndex)}
                   removeRow={(rowIndex) => removeRow(tableIndex, rowIndex)}
                   addRow={() => addRow(tableIndex)}
                   resetTable={() => resetTableOnly(tableIndex)}
