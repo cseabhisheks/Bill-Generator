@@ -12,7 +12,7 @@ const PrintHeader = ({ refNo = '', date = '', panNumber = '', mobileNumber = '' 
   const showMobile = mobile.length > 0;
 
   return (
-<div className="print-header mx-auto box-border w-full max-w-[800px] bg-white px-3 py-2 font-[Arial,Helvetica,sans-serif] text-black">
+    <div className="print-header mx-auto box-border w-full max-w-[800px] bg-white px-3 py-2 font-[Arial,Helvetica,sans-serif] text-black">
 
       {/* Top row */}
       {(showPan || showMobile) && (
@@ -47,7 +47,7 @@ const PrintHeader = ({ refNo = '', date = '', panNumber = '', mobileNumber = '' 
           </h1>
 
           <p className="my-1 text-[15px] font-semibold text-[#1a3a8a]">
-            ( P.O.P, Gypsum, Seiling, Contractor)
+            ( P.O.P, Gypsum, Ceiling, Contractor)
           </p>
 
           <p className="m-0 text-sm font-semibold text-[#1a3a8a]">
