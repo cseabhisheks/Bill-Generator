@@ -16,7 +16,7 @@ const PrintHeader = ({ refNo = '', date = '', panNumber = '', mobileNumber = '' 
 
       {/* Top row */}
       {(showPan || showMobile) && (
-        <div className="mb-1.5 flex items-center justify-between px-1">
+        <div className="mb-1.5 flex items-center justify-between">
           {showPan && (
             <span className="text-sm font-semibold text-[#1a3a8a]">
               PAN No : {pan}
